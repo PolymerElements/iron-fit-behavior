@@ -1,2 +1,3 @@
 # iron-fit-behavior
-Fits an element into another element
+
+Fits an element in the window, or another element.
