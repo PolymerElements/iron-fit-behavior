@@ -27,6 +27,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style>
 
+      .absolute {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
       .scrolling {
         overflow: auto;
       }
@@ -40,18 +46,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .positioned-left {
+        position: absolute;
         left: 100px;
       }
 
       .positioned-right {
+        position: absolute;
         right: 100px;
       }
 
       .positioned-top {
+        position: absolute;
         top: 100px;
       }
 
       .positioned-bottom {
+        position: absolute;
         bottom: 100px;
       }
 
@@ -71,6 +81,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </head>
   <body>
+
+    <test-fixture id="absolute">
+      <template>
+        <test-fit auto-fit class="absolute">
+          Absolutely positioned
+        </test-fit>
+      </template>
+    </test-fixture>
 
     <test-fixture id="sized-xy">
       <template>
@@ -98,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="inline-positioned-xy">
       <template>
-        <test-fit auto-fit class="sized-x sized-y" style="right:100px;bottom:100px;">
+        <test-fit auto-fit class="sized-x sized-y" style="position:absolute;right:100px;bottom:100px;">
           Sized (x/y), positioned/positioned
         </test-fit>
       </template>
@@ -156,6 +174,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(rect.top, window.innerHeight - rect.height - 100, 'top is unset');
           assert.equal(rect.left, window.innerWidth - rect.width - 100, 'left is unset');
         });
+
+        test('position property is preserved after', function() {
+          var el = fixture('absolute');
+          assert.equal(getComputedStyle(el).position, 'absolute', 'position:absolute is preserved');
+        })
 
       });
 
