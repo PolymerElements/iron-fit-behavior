@@ -134,7 +134,9 @@ Fits an element in another element using `max-height` and `max-width`, and optio
         this.sizingTarget.style.maxWidth = '';
         this.style.left = '';
       }
-      this.style.position = this._fitInfo.css;
+      if (this._fitInfo) {
+        this.style.position = this._fitInfo.positionedBy.css;
+      }
       this._fitInfo = null;
     },
 
@@ -179,8 +181,10 @@ Fits an element in another element using `max-height` and `max-width`, and optio
      * Centers horizontally and vertically if not already positioned.
      */
     center: function() {
-      // only center if position fixed.
-      this.style.position = 'fixed';
+      if (!this._fitInfo.positionedBy.vertically || !this._fitInfo.positionedBy.horizontally) {
+        // need position:fixed to center
+        this.style.position = 'fixed';
+      }
       if (!this._fitInfo.positionedBy.vertically) {
         var top = (this._fitHeight - this.offsetHeight) / 2;
         top -= this._fitInfo.margin.top;
