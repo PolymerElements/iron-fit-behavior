@@ -1,19 +1,22 @@
 {
   "name": "iron-fit-behavior",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
-  "main": "iron-fit-behavior",
-  "authors": "The Polymer Authors",
+  "main": "iron-fit-behavior.html",
+  "authors": [
+    "The Polymer Authors"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/PolymerElements/iron-fit-behavior.git"
   },
   "dependencies": {
-    "polymer": "Polymer/polymer#v0.8.0-rc.7"
+    "polymer": "Polymer/polymer#v0.9.0-rc.1"
   },
   "devDependencies": {
-    "test-fixture": "PolymerElements/test-fixture#^0.8.0",
-    "web-component-tester": "*",
-    "webcomponentsjs": "^0.6.0"
+    "iron-component-page": "polymerelements/iron-component-page#^0.9.0",
+    "test-fixture": "PolymerElements/test-fixture#^0.9.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.6.0",
+    "web-component-tester": "*"
   }
 }
