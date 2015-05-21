@@ -88,7 +88,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="absolute">
       <template>
-        <test-fit auto-fit class="absolute">
+        <test-fit auto-fit-on-attach class="absolute">
           Absolutely positioned
         </test-fit>
       </template>
@@ -96,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="sized-xy">
       <template>
-        <test-fit auto-fit class="sized-x sized-y">
+        <test-fit auto-fit-on-attach class="sized-x sized-y">
           Sized (x/y), auto center/center
         </test-fit>
       </template>
@@ -104,7 +104,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="sized-x">
       <template>
-        <test-fit auto-fit class="sized-x">
+        <test-fit auto-fit-on-attach class="sized-x">
           Sized (x), auto center/center
         </test-fit>
       </template>
@@ -112,7 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="positioned-xy">
       <template>
-        <test-fit auto-fit class="sized-x positioned-left positioned-top">
+        <test-fit auto-fit-on-attach class="sized-x positioned-left positioned-top">
           Sized (x/y), positioned/positioned
         </test-fit>
       </template>
@@ -120,7 +120,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="inline-positioned-xy">
       <template>
-        <test-fit auto-fit class="sized-x sized-y" style="position:absolute;right:100px;bottom:100px;">
+        <test-fit auto-fit-on-attach class="sized-x sized-y" style="position:absolute;right:100px;bottom:100px;">
           Sized (x/y), positioned/positioned
         </test-fit>
       </template>
@@ -128,7 +128,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="sectioned">
       <template>
-        <test-fit auto-fit class="sized-x">
+        <test-fit auto-fit-on-attach class="sized-x">
           <div>
             Sized (x), auto center/center with scrolling section
           </div>
@@ -140,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <test-fixture id="constrain-target">
       <template>
         <div class="constrain" style="position: fixed; top: 0; left: 0; width: 50vw; height: 50vh; border: 1px solid black;">
-          <test-fit auto-fit class="el">
+          <test-fit auto-fit-on-attach class="el">
             <div>
               Auto center/center to parent element
             </div>
@@ -175,8 +175,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('inline positioned element is not re-positioned', function() {
           var el = fixture('inline-positioned-xy');
           var rect = el.getBoundingClientRect();
-          assert.equal(rect.top, window.innerHeight - rect.height - 100, 'top is unset');
-          assert.equal(rect.left, window.innerWidth - rect.width - 100, 'left is unset');
+          // need to measure document.body here because mocha sets a min-width on html,body, and
+          // the element is positioned wrt to that by css
+          var bodyRect = document.body.getBoundingClientRect();
+          assert.equal(rect.top, bodyRect.height - rect.height - 100, 'top is unset');
+          assert.equal(rect.left, bodyRect.width - rect.width - 100, 'left is unset');
         });
 
         test('position property is preserved after', function() {

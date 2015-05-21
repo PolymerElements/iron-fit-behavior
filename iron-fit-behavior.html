@@ -10,12 +10,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 
-<!--
-Fits an element in another element using `max-height` and `max-width`, and optionally centers it.
--->
 <script>
 
-  /** @polymerBehavior */
+/*
+Polymer.IronFitBehavior fits an element in another element using `max-height` and `max-width`, and
+optionally centers it in the window or another element.
+
+The element will only be sized and/or positioned if it has not already been sized and/or positioned
+by CSS.
+
+CSS properties               | Action
+-----------------------------|-------------------------------------------
+`position` set               | Element is not centered horizontally or vertically
+`top` or `bottom` set        | Element is not vertically centered
+`left` or `right` set        | Element is not horizontally centered
+`max-height` or `height` set | Element respects `max-height` or `height`
+`max-width` or `width` set   | Element respects `max-width` or `width`
+
+@polymerBehavior
+*/
+
   Polymer.IronFitBehavior = {
 
     properties: {
@@ -43,7 +57,7 @@ Fits an element in another element using `max-height` and `max-width`, and optio
       /**
        * Set to true to auto-fit on attach.
        */
-      autoFit: {
+      autoFitOnAttach: {
         type: Boolean,
         value: false
       },
@@ -75,7 +89,7 @@ Fits an element in another element using `max-height` and `max-width`, and optio
     },
 
     attached: function() {
-      if (this.autoFit) {
+      if (this.autoFitOnAttach) {
         if (window.getComputedStyle(this).display === 'none') {
           setTimeout(function() {
             this.fit();
@@ -86,6 +100,9 @@ Fits an element in another element using `max-height` and `max-width`, and optio
       }
     },
 
+    /**
+     * Fits and optionally centers the element into the window, or `fitInfo` if specified.
+     */
     fit: function() {
       this._discoverInfo();
       this.constrain();
@@ -141,11 +158,19 @@ Fits an element in another element using `max-height` and `max-width`, and optio
       this._fitInfo = null;
     },
 
+    /**
+     * Equivalent to calling `resetFit()` and `fit()`. Useful to call this after the element,
+     * the window, or the `fitInfo` element has been resized.
+     */
     refit: function() {
       this.resetFit();
       this.fit();
     },
 
+    /**
+     * Constrains the size of the element to the window or `fitInfo` by setting `max-height`
+     * and/or `max-width`.
+     */
     constrain: function() {
       var info = this._fitInfo;
       // position at (0px, 0px) if not already positioned, so we can measure the natural size.
@@ -179,7 +204,8 @@ Fits an element in another element using `max-height` and `max-width`, and optio
     },
 
     /**
-     * Centers horizontally and vertically if not already positioned.
+     * Centers horizontally and vertically if not already positioned. This also sets
+     * `position:fixed`.
      */
     center: function() {
       if (!this._fitInfo.positionedBy.vertically || !this._fitInfo.positionedBy.horizontally) {
