@@ -6,6 +6,11 @@
   "main": [
     "iron-fit-behavior.html"
   ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "behavior"
+  ],
   "authors": [
     "The Polymer Authors"
   ],
