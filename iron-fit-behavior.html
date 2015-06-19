@@ -39,6 +39,7 @@ CSS properties               | Action
        * The element that will receive a `max-height`/`width`. By default it is the same as `this`,
        * but it can be set to a child element. This is useful, for example, for implementing a
        * scrolling region inside the element.
+       * @type {!Element}
        */
       sizingTarget: {
         type: Object,
@@ -63,6 +64,7 @@ CSS properties               | Action
         value: false
       },
 
+      /** @type {?Object} */
       _fitInfo: {
         type: Object
       }
