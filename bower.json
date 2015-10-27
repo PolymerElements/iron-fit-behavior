@@ -4,9 +4,7 @@
   "license": "http://polymer.github.io/LICENSE.txt",
   "description": "Fits an element inside another element",
   "private": true,
-  "main": [
-    "iron-fit-behavior.html"
-  ],
+  "main": "iron-fit-behavior.html",
   "keywords": [
     "web-components",
     "polymer",
