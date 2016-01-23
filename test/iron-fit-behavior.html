@@ -83,6 +83,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </head>
   <body>
 
+
     <test-fixture id="absolute">
       <template>
         <test-fit auto-fit-on-attach class="absolute">
@@ -104,6 +105,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <test-fit auto-fit-on-attach class="sized-x">
           Sized (x), auto center/center
         </test-fit>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="with-max-width">
+      <template>
+        <div class="constrain" style="position: fixed; top: 20px; left: 100px; width: 50vw; height: 50vh; border: 1px solid black;">
+          <test-fit auto-fit-on-attach class="with-max-width el">
+            with-max-width, auto center/center
+          </test-fit>
+        </div>
       </template>
     </test-fixture>
 
@@ -353,6 +364,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var constrain = fixture('constrain-target');
           var el = Polymer.dom(constrain).querySelector('.el')
           makeScrolling(el);
+          el.fitInto = constrain;
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          var crect = constrain.getBoundingClientRect();
+          assert.closeTo(rect.left - crect.left - (crect.right - rect.right), 0, 5, 'centered horizontally in fitInto');
+          assert.closeTo(rect.top - crect.top - (crect.bottom - rect.bottom), 0, 5, 'centered vertically in fitInto');
+        });
+
+        test('element with max-width centers in another element', function() {
+          var constrain = fixture('with-max-width');
+          var el = Polymer.dom(constrain).querySelector('.el');
           el.fitInto = constrain;
           el.refit();
           var rect = el.getBoundingClientRect();
