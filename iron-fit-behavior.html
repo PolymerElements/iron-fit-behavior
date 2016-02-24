@@ -134,6 +134,10 @@ CSS properties               | Action
 
     /**
      * Memoize information needed to position and size the target element.
+     * NOTE: Calculating positionedBy.vertically and positionedBy.horizontally is bugged in
+     * firefox. This is a monkeypatch, but the issue is under development and this hopefully
+     * won't be necessary for long. You can track the issue here:
+     * https://github.com/PolymerElements/iron-fit-behavior/issues/26#issuecomment-176633745
      */
     _discoverInfo: function() {
       if (this._fitInfo) {
@@ -147,9 +151,9 @@ CSS properties               | Action
           left: this.style.left || ''
         },
         positionedBy: {
-          vertically: target.top !== 'auto' ? 'top' :
+          vertically: (target.top !== 'auto' && target.top !== '0px') ? 'top' :
             ((target.bottom !== 'auto' && target.bottom !== '0px') ?  'bottom' : null),
-          horizontally: target.left !== 'auto' ? 'left' :
+          horizontally: (target.left !== 'auto' && target.left !== '0px') ? 'left' :
             ((target.right !== 'auto' && target.right !== '0px') ?  'right' : null),
           css: target.position
         },
