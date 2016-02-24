@@ -147,10 +147,10 @@ CSS properties               | Action
           left: this.style.left || ''
         },
         positionedBy: {
-          vertically: target.top !== 'auto' ? 'top' : (target.bottom !== 'auto' ?
-            'bottom' : null),
-          horizontally: target.left !== 'auto' ? 'left' : (target.right !== 'auto' ?
-            'right' : null),
+          vertically: (target.top !== 'auto' && target.top !== '0px') ? 'top' :
+            ((target.bottom !== 'auto' && target.bottom !== '0px') ?  'bottom' : null),
+          horizontally: (target.left !== 'auto' && target.left !== '0px') ? 'left' :
+            ((target.right !== 'auto' && target.right !== '0px') ?  'right' : null),
           css: target.position
         },
         sizedBy: {
