@@ -29,14 +29,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 0;
     }
     .sized {
-      max-width: 50%;
-      max-height: 50%;
       padding: 20px;
     }
-
+    .sizer {
+      width: 120vw;
+      height: 50vh;
+    }
     #container {
       display: inline-block;
-      margin: 50px;
+      margin: 25px;
+      width: 100vw;
       padding: 50px;
       border: 1px solid;
     }
@@ -46,9 +48,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <body unresolved>
 
+  <div class="sizer">
+
+  </div>
   <div id="container">
     <button onclick="myFit.positionTarget = container">Make this position target</button>
     <button onclick="myFit.positionTarget = document.body">Reset position target</button>
+    <button onclick="myFit.refit()">Refit</button>
+  </div>
+  <div class="sizer">
+
   </div>
 
   <simple-fit id="myFit" auto-fit-on-attach class="sized">
@@ -60,7 +69,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <button onclick="myFit.verticalAlign=null">auto</button>
     <button onclick="myFit.verticalAlign='top'">top</button>
     <button onclick="myFit.verticalAlign='bottom'">bottom</button>
+    <h2>Auto position</h2>
+    <button onclick="myFit.autoPosition = !myFit.autoPosition">Toggle</button>
+    <button onclick="myFit.refit()">Refit</button>
   </simple-fit>
+
+
+  <script>
+    window.addEventListener('resize', function() {
+      myFit.refit();
+    });
+  </script>
 
 </body>
 

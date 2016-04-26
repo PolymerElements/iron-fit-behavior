@@ -11,7 +11,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
-
 /**
 Polymer.IronFitBehavior fits an element in another element using `max-height` and `max-width`, and
 optionally centers it in the window or another element.
@@ -54,6 +53,14 @@ CSS properties               | Action
       fitInto: {
         type: Object,
         value: window
+      },
+
+      /**
+       * Will position the element around the positionTarget without overlapping it.
+       */
+      autoPosition: {
+        type: Boolean,
+        observer: '_updatePosition'
       },
 
       /**
@@ -235,8 +242,6 @@ CSS properties               | Action
       if (this._fitInfo) {
         return;
       }
-      var hAlign = this._localeHorizontalAlign;
-      var vAlign = this.verticalAlign;
       var target = window.getComputedStyle(this);
       var sizer = window.getComputedStyle(this.sizingTarget);
       this._fitInfo = {
@@ -249,9 +254,9 @@ CSS properties               | Action
         },
         positionedBy: {
           vertically: target.top !== 'auto' ? 'top' : (target.bottom !== 'auto' ?
-            'bottom' : vAlign),
+            'bottom' : this.verticalAlign),
           horizontally: target.left !== 'auto' ? 'left' : (target.right !== 'auto' ?
-            'right' : hAlign)
+            'right' : this._localeHorizontalAlign)
         },
         thisRect: this.getBoundingClientRect(),
         sizedBy: {
@@ -301,11 +306,24 @@ CSS properties               | Action
      * Positions the element according to horizontalAlign, verticalAlign.
      */
     position: function() {
-      if (!this.horizontalAlign && !this.verticalAlign) {
+      if (!this.horizontalAlign && !this.verticalAlign && !this.autoPosition) {
         // needs to be centered, and it is done after constrain.
         return;
       }
       this.style.position = 'fixed';
+      var positionRect = this._getNormalizedPositionRect();
+
+      if (this.autoPosition) {
+        // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
+        this.style.left = '0px';
+        this.style.top = '0px';
+        var rect = this.getBoundingClientRect();
+        var point = this._getAutopositionPoint(rect, positionRect);
+        this.style.left = point.left + 'px';
+        this.style.top = point.top + 'px';
+        return;
+      }
+
       var hAlign = this._fitInfo.positionedBy.horizontally;
       var vAlign = this._fitInfo.positionedBy.vertically;
       // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
@@ -315,9 +333,7 @@ CSS properties               | Action
       if (vAlign) {
         this.style[vAlign] = '0px';
       }
-
       var rect = this.getBoundingClientRect();
-      var positionRect = this.positionTarget.getBoundingClientRect();
 
       if (hAlign) {
         var horizontalValue = this._horizontalAlignTargetValue(rect, positionRect, hAlign === 'right');
@@ -327,6 +343,7 @@ CSS properties               | Action
         var verticalValue = this._verticalAlignTargetValue(rect, positionRect, vAlign === 'bottom');
         this.style[vAlign] = verticalValue + 'px';
       }
+
     },
 
     /**
@@ -335,17 +352,20 @@ CSS properties               | Action
      */
     constrain: function() {
       var info = this._fitInfo;
-      // position at (0px, 0px) if not already positioned, so we can measure the natural size.
-      if (!this._fitInfo.positionedBy.vertically) {
-        this.style.top = '0px';
+      if (!this.autoPosition) {
+        // position at (0px, 0px) if not already positioned, so we can measure the natural size.
+        if (!info.positionedBy.vertically) {
+          this.style.top = '0px';
+        }
+        if (!info.positionedBy.horizontally) {
+          this.style.left = '0px';
+        }
+        if (!info.positionedBy.vertically || !info.positionedBy.horizontally) {
+          // need position:fixed to properly size the element
+          this.style.position = 'fixed';
+        }
       }
-      if (!this._fitInfo.positionedBy.horizontally) {
-        this.style.left = '0px';
-      }
-      if (!this._fitInfo.positionedBy.vertically || !this._fitInfo.positionedBy.horizontally) {
-        // need position:fixed to properly size the element
-        this.style.position = 'fixed';
-      }
+
       // need border-box for margin/padding
       this.sizingTarget.style.boxSizing = 'border-box';
       // constrain the width and height if not already set
@@ -379,7 +399,7 @@ CSS properties               | Action
      */
     center: function() {
       var positionedBy = this._fitInfo.positionedBy;
-      if (positionedBy.vertically && positionedBy.horizontally) {
+      if (this.autoPosition || (positionedBy.vertically && positionedBy.horizontally)) {
         // Already positioned.
         return;
       }
@@ -417,7 +437,7 @@ CSS properties               | Action
     _horizontalAlignTargetValue: function(rect, positionRect, fromRight) {
       var target;
       if (fromRight) {
-        target = document.documentElement.clientWidth - positionRect.right - (this._fitWidth - rect.right);
+        target = document.documentElement.offsetWidth - positionRect.right - (this._fitWidth - rect.right);
       } else {
         target = positionRect.left - rect.left;
       }
@@ -437,7 +457,7 @@ CSS properties               | Action
     _verticalAlignTargetValue: function(rect, positionRect, fromBottom) {
       var target;
       if (fromBottom) {
-        target = document.documentElement.clientHeight - positionRect.bottom - (this._fitHeight - rect.bottom);
+        target = document.documentElement.offsetHeight - positionRect.bottom - (this._fitHeight - rect.bottom);
       } else {
         target = positionRect.top - rect.top;
       }
@@ -450,8 +470,74 @@ CSS properties               | Action
       if (this.isAttached) {
         this.refit();
       }
+    },
+
+    _getAutopositionPoint: function(rect, positionRect) {
+      var maxWidth = document.documentElement.offsetWidth;
+      var maxHeight = document.documentElement.offsetHeight;
+      var points = [{
+        left: positionRect.left + this.horizontalOffset, // left aligned to left
+        top: positionRect.bottom + this.verticalOffset // top aligned to bottom
+      }, {
+        left: positionRect.right - this.horizontalOffset - rect.width, // right aligned to right
+        top: positionRect.bottom + this.verticalOffset // top aligned to bottom
+      }, {
+        left: positionRect.left - this.horizontalOffset - rect.width, // right aligned to left
+        top: positionRect.top + this.verticalOffset // top aligned to top
+      }, {
+        left: positionRect.right + this.horizontalOffset, // left aligned to right
+        top: positionRect.top + this.verticalOffset // top aligned to top
+      }, {
+        left: positionRect.left + this.horizontalOffset, // left aligned to left
+        top: positionRect.top - this.verticalOffset - rect.height // bottom aligned to top
+      }, {
+        left: positionRect.right - this.horizontalOffset - rect.width, // right aligned to right
+        top: positionRect.top - this.verticalOffset - rect.height // bottom aligned to top
+      }, {
+        left: positionRect.left - this.horizontalOffset - rect.width, // right aligned to left
+        top: positionRect.bottom - this.verticalOffset - rect.height // bottom aligned to bottom
+      }, {
+        left: positionRect.right + this.horizontalOffset, // left aligned to right
+        top: positionRect.bottom - this.verticalOffset - rect.height // bottom aligned to bottom
+      }];
+
+      // Search for the point that minimizes the cropped area.
+      var point;
+      for (var i = 0; i < points.length; i++) {
+        var p = points[i];
+        var croppedLeft = Math.max(0, -p.left);
+        var croppedRight = Math.max(0, p.left + rect.width - maxWidth);
+        var croppedAreaWidth = (croppedLeft + croppedRight) * rect.height;
+        var croppedTop = Math.max(0, -p.top);
+        var croppedBottom = Math.max(0, p.top + rect.height - maxHeight);
+        var croppedAreaHeight = (croppedTop + croppedBottom) * rect.width;
+        p.croppedArea = croppedAreaWidth + croppedAreaHeight;
+        if (!point || point.croppedArea > p.croppedArea) {
+          point = p;
+        }
+      }
+      // If it crops the whole element, better to position it at top-left
+      var area = rect.width * rect.height;
+      if (point.croppedArea >= area) {
+        point.left = positionRect.left + this.horizontalOffset;
+        point.top = positionRect.top + this.verticalOffset;
+      }
+      return point;
+    },
+
+    _getNormalizedPositionRect: function() {
+      if ([document.body, document.documentElement, window].indexOf(this.positionTarget) !== -1) {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          bottom: window.innerHeight,
+          right: window.innerWidth
+        };
+      }
+      return this.positionTarget.getBoundingClientRect();
     }
 
   };
-
 </script>
