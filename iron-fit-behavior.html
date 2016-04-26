@@ -57,6 +57,74 @@ CSS properties               | Action
       },
 
       /**
+       * The element that should be used to position the element.
+       */
+      positionTarget: {
+        type: Node,
+        observer: '_updatePosition'
+      },
+
+      /**
+       * The orientation against which to align the element horizontally
+       * relative to the `positionTarget`. Possible values are left, right.
+       */
+      horizontalAlign: {
+        type: String,
+        observer: '_updatePosition'
+      },
+
+      /**
+       * The orientation against which to align the element vertically
+       * relative to the `positionTarget`. Possible values are top, bottom.
+       */
+      verticalAlign: {
+        type: String,
+        observer: '_updatePosition'
+      },
+
+      /**
+       * A pixel value that will be added to the position calculated for the
+       * given `horizontalAlign`, in the direction of alignment. You can think
+       * of it as increasing or decreasing the distance to the side of the
+       * screen given by `horizontalAlign`.
+       *
+       * If `horizontalAlign` is "left", this offset will increase or decrease
+       * the distance to the left side of the screen: a negative offset will
+       * move the dropdown to the left; a positive one, to the right.
+       *
+       * Conversely if `horizontalAlign` is "right", this offset will increase
+       * or decrease the distance to the right side of the screen: a negative
+       * offset will move the dropdown to the right; a positive one, to the left.
+       */
+      horizontalOffset: {
+        type: Number,
+        value: 0,
+        notify: true,
+        observer: '_updatePosition'
+      },
+
+      /**
+       * A pixel value that will be added to the position calculated for the
+       * given `verticalAlign`, in the direction of alignment. You can think
+       * of it as increasing or decreasing the distance to the side of the
+       * screen given by `verticalAlign`.
+       *
+       * If `verticalAlign` is "top", this offset will increase or decrease
+       * the distance to the top side of the screen: a negative offset will
+       * move the dropdown upwards; a positive one, downwards.
+       *
+       * Conversely if `verticalAlign` is "bottom", this offset will increase
+       * or decrease the distance to the bottom side of the screen: a negative
+       * offset will move the dropdown downwards; a positive one, upwards.
+       */
+      verticalOffset: {
+        type: Number,
+        value: 0,
+        notify: true,
+        observer: '_updatePosition'
+      },
+
+      /**
        * Set to true to auto-fit on attach.
        */
       autoFitOnAttach: {
@@ -68,7 +136,6 @@ CSS properties               | Action
       _fitInfo: {
         type: Object
       }
-
     },
 
     get _fitWidth() {
@@ -111,7 +178,35 @@ CSS properties               | Action
       return fitTop;
     },
 
+    /**
+     * The element that should be used to position the element when
+     * it opens, if no position target is configured.
+     */
+    get _defaultPositionTarget() {
+      var parent = Polymer.dom(this).parentNode;
+
+      if (parent.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+        parent = parent.host;
+      }
+
+      return parent;
+    },
+
+    /**
+     * The horizontal align value, accounting for the RTL/LTR text direction.
+     */
+    get _localeHorizontalAlign() {
+      if (!this._isRTL || !this.horizontalAlign) {
+        return this.horizontalAlign;
+      }
+      // In RTL, "left" becomes "right".
+      return this.horizontalAlign === 'right' ? 'left' : 'right';
+    },
+
     attached: function() {
+      // Memoize this to avoid expensive calculations & relayouts.
+      this._isRTL = window.getComputedStyle(this).direction == 'rtl';
+      this.positionTarget = this.positionTarget || this._defaultPositionTarget;
       if (this.autoFitOnAttach) {
         if (window.getComputedStyle(this).display === 'none') {
           setTimeout(function() {
@@ -128,6 +223,7 @@ CSS properties               | Action
      */
     fit: function() {
       this._discoverInfo();
+      this.position();
       this.constrain();
       this.center();
     },
@@ -139,20 +235,25 @@ CSS properties               | Action
       if (this._fitInfo) {
         return;
       }
+      var hAlign = this._localeHorizontalAlign;
+      var vAlign = this.verticalAlign;
       var target = window.getComputedStyle(this);
       var sizer = window.getComputedStyle(this.sizingTarget);
       this._fitInfo = {
         inlineStyle: {
           top: this.style.top || '',
-          left: this.style.left || ''
+          left: this.style.left || '',
+          bottom: this.style.bottom || '',
+          right: this.style.right || '',
+          position: this.style.position || ''
         },
         positionedBy: {
           vertically: target.top !== 'auto' ? 'top' : (target.bottom !== 'auto' ?
-            'bottom' : null),
+            'bottom' : vAlign),
           horizontally: target.left !== 'auto' ? 'left' : (target.right !== 'auto' ?
-            'right' : null),
-          css: target.position
+            'right' : hAlign)
         },
+        thisRect: this.getBoundingClientRect(),
         sizedBy: {
           height: sizer.maxHeight !== 'none',
           width: sizer.maxWidth !== 'none'
@@ -177,11 +278,13 @@ CSS properties               | Action
       if (!this._fitInfo || !this._fitInfo.sizedBy.height) {
         this.sizingTarget.style.maxHeight = '';
       }
+
       this.style.top = this._fitInfo ? this._fitInfo.inlineStyle.top : '';
       this.style.left = this._fitInfo ? this._fitInfo.inlineStyle.left : '';
-      if (this._fitInfo) {
-        this.style.position = this._fitInfo.positionedBy.css;
-      }
+      this.style.bottom = this._fitInfo ? this._fitInfo.inlineStyle.bottom : '';
+      this.style.right = this._fitInfo ? this._fitInfo.inlineStyle.right : '';
+      this.style.position = this._fitInfo ? this._fitInfo.inlineStyle.position : '';
+
       this._fitInfo = null;
     },
 
@@ -192,6 +295,38 @@ CSS properties               | Action
     refit: function() {
       this.resetFit();
       this.fit();
+    },
+
+    /**
+     * Positions the element according to horizontalAlign, verticalAlign.
+     */
+    position: function() {
+      if (!this.horizontalAlign && !this.verticalAlign) {
+        // needs to be centered, and it is done after constrain.
+        return;
+      }
+      this.style.position = 'fixed';
+      var hAlign = this._fitInfo.positionedBy.horizontally;
+      var vAlign = this._fitInfo.positionedBy.vertically;
+      // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
+      if (hAlign) {
+        this.style[hAlign] = '0px';
+      }
+      if (vAlign) {
+        this.style[vAlign] = '0px';
+      }
+
+      var rect = this.getBoundingClientRect();
+      var positionRect = this.positionTarget.getBoundingClientRect();
+
+      if (hAlign) {
+        var horizontalValue = this._horizontalAlignTargetValue(rect, positionRect, hAlign === 'right');
+        this.style[hAlign] = horizontalValue + 'px';
+      }
+      if (vAlign) {
+        var verticalValue = this._verticalAlignTargetValue(rect, positionRect, vAlign === 'bottom');
+        this.style[vAlign] = verticalValue + 'px';
+      }
     },
 
     /**
@@ -216,17 +351,21 @@ CSS properties               | Action
       // constrain the width and height if not already set
       var rect = this.getBoundingClientRect();
       if (!info.sizedBy.height) {
-        this._sizeDimension(rect, info.positionedBy.vertically, 'top', 'bottom', 'Height');
+        this._sizeDimension(rect, 'Height');
       }
       if (!info.sizedBy.width) {
-        this._sizeDimension(rect, info.positionedBy.horizontally, 'left', 'right', 'Width');
+        this._sizeDimension(rect, 'Width');
       }
     },
 
-    _sizeDimension: function(rect, positionedBy, start, end, extent) {
+    _sizeDimension: function(rect, extent) {
       var info = this._fitInfo;
+      var positionedBy = extent === 'Width' ? info.positionedBy.horizontally : info.positionedBy.vertically;
       var max = extent === 'Width' ? this._fitWidth : this._fitHeight;
+      var start = extent === 'Width' ? 'left' : 'top';
+      var end = extent === 'Width' ? 'right' : 'bottom';
       var flip = (positionedBy === end);
+
       var offset = flip ? max - rect[end] : rect[start];
       var margin = info.margin[flip ? start : end];
       var offsetExtent = 'offset' + extent;
@@ -264,6 +403,52 @@ CSS properties               | Action
       if (!positionedBy.horizontally) {
         var left = this._fitLeft - rect.left + (this._fitWidth - rect.width) / 2;
         this.style.left = left + 'px';
+      }
+    },
+
+    /**
+     * The horizontal offset value used to position the element.
+     * @param {ClientRect} rect
+     * @param {ClientRect} positionRect
+     * @param {boolean=} fromRight
+     * @return {number} pixels
+     * @private
+     */
+    _horizontalAlignTargetValue: function(rect, positionRect, fromRight) {
+      var target;
+      if (fromRight) {
+        target = document.documentElement.clientWidth - positionRect.right - (this._fitWidth - rect.right);
+      } else {
+        target = positionRect.left - rect.left;
+      }
+      target += this.horizontalOffset;
+
+      return Math.max(target, 0);
+    },
+
+    /**
+     * The vertical offset value used to position the element.
+     * @param {ClientRect} rect
+     * @param {ClientRect} positionRect
+     * @param {boolean=} fromBottom
+     * @return {number} pixels
+     * @private
+     */
+    _verticalAlignTargetValue: function(rect, positionRect, fromBottom) {
+      var target;
+      if (fromBottom) {
+        target = document.documentElement.clientHeight - positionRect.bottom - (this._fitHeight - rect.bottom);
+      } else {
+        target = positionRect.top - rect.top;
+      }
+      target += this.verticalOffset;
+
+      return Math.max(target, 0);
+    },
+
+    _updatePosition: function() {
+      if (this.isAttached) {
+        this.refit();
       }
     }
 

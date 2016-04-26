@@ -9,35 +9,59 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-  <head>
 
-    <title>iron-fit-behavior demo</title>
+<head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <title>iron-fit-behavior demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link href="../../paper-styles/demo-pages.html" rel="import">
-    <link rel="import" href="simple-fit.html">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <style>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link href="../../paper-styles/demo-pages.html" rel="import">
+  <link rel="import" href="simple-fit.html">
 
-      .sized {
-        max-width: 50%;
-        max-height: 50%;
-        padding: 20px;
-      }
+  <style is="custom-style">
+    body {
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .sized {
+      max-width: 50%;
+      max-height: 50%;
+      padding: 20px;
+    }
 
-    </style>
+    #container {
+      display: inline-block;
+      margin: 50px;
+      padding: 50px;
+      border: 1px solid;
+    }
+  </style>
 
-  </head>
-  <body unresolved>
+</head>
 
-    <simple-fit id="myFit" auto-fit-on-attach class="sized" onclick="myFit.refit()">
-        Centered in window.<br><br>
-        Resize the window and click here to refit.
-    </simple-fit>
+<body unresolved>
 
-  </body>
+  <div id="container">
+    <button onclick="myFit.positionTarget = container">Make this position target</button>
+    <button onclick="myFit.positionTarget = document.body">Reset position target</button>
+  </div>
+
+  <simple-fit id="myFit" auto-fit-on-attach class="sized">
+    <h2>Horizontal align</h2>
+    <button onclick="myFit.horizontalAlign=null">auto</button>
+    <button onclick="myFit.horizontalAlign='left'">left</button>
+    <button onclick="myFit.horizontalAlign='right'">right</button>
+    <h2>Vertical align</h2>
+    <button onclick="myFit.verticalAlign=null">auto</button>
+    <button onclick="myFit.verticalAlign='top'">top</button>
+    <button onclick="myFit.verticalAlign='bottom'">bottom</button>
+  </simple-fit>
+
+</body>
+
 </html>
