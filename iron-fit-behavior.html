@@ -58,7 +58,7 @@ CSS properties               | Action
       /**
        * Will position the element around the positionTarget without overlapping it.
        */
-      autoPosition: {
+      noOverlap: {
         type: Boolean
       },
 
@@ -71,7 +71,7 @@ CSS properties               | Action
 
       /**
        * The orientation against which to align the element horizontally
-       * relative to the `positionTarget`. Possible values are left, right.
+       * relative to the `positionTarget`. Possible values are left, right, auto.
        */
       horizontalAlign: {
         type: String
@@ -79,7 +79,7 @@ CSS properties               | Action
 
       /**
        * The orientation against which to align the element vertically
-       * relative to the `positionTarget`. Possible values are top, bottom.
+       * relative to the `positionTarget`. Possible values are top, bottom, auto.
        */
       verticalAlign: {
         type: String
@@ -299,7 +299,7 @@ CSS properties               | Action
      * Positions the element according to horizontalAlign, verticalAlign.
      */
     position: function() {
-      if (!this.horizontalAlign && !this.verticalAlign && !this.autoPosition) {
+      if (!this.horizontalAlign && !this.verticalAlign) {
         // needs to be centered, and it is done after constrain.
         return;
       }
@@ -309,7 +309,12 @@ CSS properties               | Action
       this.style.top = '0px';
       var rect = this.getBoundingClientRect();
       var positionRect = this._getNormalizedPositionRect();
-      var point = this.autoPosition ? this._getAutopositionPoint(rect, positionRect) : this._getPositionPoint(rect, positionRect);
+      var point;
+      if (this.horizontalAlign === 'auto' && this.verticalAlign === 'auto') {
+        point = this._getAutopositionPoint(rect, positionRect);
+      } else {
+        point = this._getPositionPoint(rect, positionRect);
+      }
       var maxWidth = Math.min(rect.width, this._fitWidth);
       var maxHeight = Math.min(rect.height, this._fitHeight);
       if (point.top < 0) {
@@ -335,7 +340,7 @@ CSS properties               | Action
      * and/or `max-width`.
      */
     constrain: function() {
-      if (this.autoPosition || this.horizontalAlign || this.verticalAlign) {
+      if (this.horizontalAlign || this.verticalAlign) {
         return;
       }
       var info = this._fitInfo;
@@ -383,7 +388,7 @@ CSS properties               | Action
      * `position:fixed`.
      */
     center: function() {
-      if (this.autoPosition || this.horizontalAlign || this.verticalAlign) {
+      if (this.horizontalAlign || this.verticalAlign) {
         return;
       }
       var positionedBy = this._fitInfo.positionedBy;
@@ -454,40 +459,51 @@ CSS properties               | Action
       return Math.max(target, 0);
     },
 
-    _updatePosition: function() {
-      if (this.isAttached) {
-        this.refit();
-      }
-    },
-
     _getAutopositionPoint: function(rect, positionRect) {
       var hOffset = this.horizontalOffset;
       var vOffset = this.verticalOffset;
-      var points = [{
-        left: positionRect.left + hOffset, // left aligned to left
-        top: positionRect.bottom + vOffset // top aligned to bottom
-      }, {
-        left: positionRect.right - hOffset - rect.width, // right aligned to right
-        top: positionRect.bottom + vOffset // top aligned to bottom
-      }, {
-        left: positionRect.left - hOffset - rect.width, // right aligned to left
-        top: positionRect.top + vOffset // top aligned to top
-      }, {
-        left: positionRect.right + hOffset, // left aligned to right
-        top: positionRect.top + vOffset // top aligned to top
-      }, {
-        left: positionRect.left + hOffset, // left aligned to left
-        top: positionRect.top - vOffset - rect.height // bottom aligned to top
-      }, {
-        left: positionRect.right - hOffset - rect.width, // right aligned to right
-        top: positionRect.top - vOffset - rect.height // bottom aligned to top
-      }, {
-        left: positionRect.left - hOffset - rect.width, // right aligned to left
-        top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
-      }, {
-        left: positionRect.right + hOffset, // left aligned to right
-        top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
-      }];
+      var points;
+      if (this.noOverlap) {
+        points = [{
+          left: positionRect.left + hOffset, // left aligned to left
+          top: positionRect.bottom + vOffset // top aligned to bottom
+        }, {
+          left: positionRect.right - hOffset - rect.width, // right aligned to right
+          top: positionRect.bottom + vOffset // top aligned to bottom
+        }, {
+          left: positionRect.left - hOffset - rect.width, // right aligned to left
+          top: positionRect.top + vOffset // top aligned to top
+        }, {
+          left: positionRect.right + hOffset, // left aligned to right
+          top: positionRect.top + vOffset // top aligned to top
+        }, {
+          left: positionRect.left + hOffset, // left aligned to left
+          top: positionRect.top - vOffset - rect.height // bottom aligned to top
+        }, {
+          left: positionRect.right - hOffset - rect.width, // right aligned to right
+          top: positionRect.top - vOffset - rect.height // bottom aligned to top
+        }, {
+          left: positionRect.left - hOffset - rect.width, // right aligned to left
+          top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
+        }, {
+          left: positionRect.right + hOffset, // left aligned to right
+          top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
+        }];
+      } else {
+        points = [{
+          left: positionRect.left + hOffset, // left aligned to left
+          top: positionRect.top + vOffset // top aligned to top
+        }, {
+          left: positionRect.right - hOffset - rect.width, // right aligned to right
+          top: positionRect.top + vOffset // top aligned to top
+        }, {
+          left: positionRect.left + hOffset, // left aligned to left
+          top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
+        }, {
+          left: positionRect.right - hOffset - rect.width, // right aligned to right
+          top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
+        }];
+      }
 
       // Search for the point that minimizes the cropped area.
       var maxWidth = this._fitWidth;

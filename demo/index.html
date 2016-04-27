@@ -28,13 +28,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       margin: 0;
       padding: 0;
     }
+
     .sized {
       padding: 20px;
+      max-width: 300px;
+      min-width: 200px;
       overflow: auto;
     }
+
     .sizer {
       width: 200vw;
     }
+
     .container {
       cursor: pointer;
       text-align: center;
@@ -53,24 +58,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="sizer">
       <template is="dom-repeat" items="[[containers]]">
         <div class="container" on-tap="updatePositionTarget">
-          Position target <br>[[item]]
+          Position target
+          <br>[[item]]
         </div>
       </template>
     </div>
 
     <simple-fit id="myFit" auto-fit-on-attach class="sized">
-      <template is="dom-if" if="{{!autoPosition}}">
-        <h2>Horizontal align</h2>
-        <button on-tap="updateAlign" horizontal-align>auto</button>
-        <button on-tap="updateAlign" horizontal-align="left">left</button>
-        <button on-tap="updateAlign" horizontal-align="right">right</button>
-        <h2>Vertical align</h2>
-        <button on-tap="updateAlign" vertical-align>auto</button>
-        <button on-tap="updateAlign" vertical-align="top">top</button>
-        <button on-tap="updateAlign" vertical-align="bottom">bottom</button>
+      <template is="dom-if" if="{{!noOverlap}}">
+        <h2>Align</h2>
+        <p>
+          <button on-tap="updateAlign" horizontal-align vertical-align>center</button>
+          <button on-tap="updateAlign" horizontal-align="auto" vertical-align="auto">auto</button>
+        </p>
+        <p>
+          <button on-tap="updateAlign" vertical-align="top" horizontal-align="left">top left</button>
+          <button on-tap="updateAlign" vertical-align="top" horizontal-align="right">top right</button>
+        </p>
+        <p>
+          <button on-tap="updateAlign" vertical-align="bottom" horizontal-align="left">bottom left</button>
+          <button on-tap="updateAlign" vertical-align="bottom" horizontal-align="right">bottom right</button>
+        </p>
       </template>
-      <h2>Auto position</h2>
-      <button on-tap="toggleAutoposition">Toggle</button>
+      <h2>No Overlap</h2>
+      <button on-tap="toggleNoOverlap">Toggle</button>
     </simple-fit>
   </template>
 
@@ -84,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     t.containers = containers;
 
     t.positionTarget = document.body;
-    t.autoPosition = false;
+    t.noOverlap = false;
     t.updatePositionTarget = function(e) {
       t.positionTarget.style.backgroundColor = ''
       var pt = Polymer.dom(e).rootTarget;
@@ -118,9 +129,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       t.refit();
     };
-    t.toggleAutoposition = function() {
-      myFit.autoPosition = !myFit.autoPosition;
-      t.autoPosition = myFit.autoPosition;
+    t.toggleNoOverlap = function() {
+      myFit.noOverlap = !myFit.noOverlap;
+      t.noOverlap = myFit.noOverlap;
+      myFit.verticalAlign = myFit.noOverlap ? 'auto' : null;
+      myFit.horizontalAlign = myFit.noOverlap ? 'auto' : null;
       t.refit();
     };
     window.addEventListener('resize', t.refit);
