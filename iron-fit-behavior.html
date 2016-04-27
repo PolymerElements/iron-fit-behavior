@@ -59,16 +59,14 @@ CSS properties               | Action
        * Will position the element around the positionTarget without overlapping it.
        */
       autoPosition: {
-        type: Boolean,
-        observer: '_updatePosition'
+        type: Boolean
       },
 
       /**
        * The element that should be used to position the element.
        */
       positionTarget: {
-        type: Node,
-        observer: '_updatePosition'
+        type: Node
       },
 
       /**
@@ -76,8 +74,7 @@ CSS properties               | Action
        * relative to the `positionTarget`. Possible values are left, right.
        */
       horizontalAlign: {
-        type: String,
-        observer: '_updatePosition'
+        type: String
       },
 
       /**
@@ -85,8 +82,7 @@ CSS properties               | Action
        * relative to the `positionTarget`. Possible values are top, bottom.
        */
       verticalAlign: {
-        type: String,
-        observer: '_updatePosition'
+        type: String
       },
 
       /**
@@ -106,8 +102,7 @@ CSS properties               | Action
       horizontalOffset: {
         type: Number,
         value: 0,
-        notify: true,
-        observer: '_updatePosition'
+        notify: true
       },
 
       /**
@@ -127,8 +122,7 @@ CSS properties               | Action
       verticalOffset: {
         type: Number,
         value: 0,
-        notify: true,
-        observer: '_updatePosition'
+        notify: true
       },
 
       /**
@@ -467,30 +461,32 @@ CSS properties               | Action
     },
 
     _getAutopositionPoint: function(rect, positionRect) {
+      var hOffset = this.horizontalOffset;
+      var vOffset = this.verticalOffset;
       var points = [{
-        left: positionRect.left + this.horizontalOffset, // left aligned to left
-        top: positionRect.bottom + this.verticalOffset // top aligned to bottom
+        left: positionRect.left + hOffset, // left aligned to left
+        top: positionRect.bottom + vOffset // top aligned to bottom
       }, {
-        left: positionRect.right - this.horizontalOffset - rect.width, // right aligned to right
-        top: positionRect.bottom + this.verticalOffset // top aligned to bottom
+        left: positionRect.right - hOffset - rect.width, // right aligned to right
+        top: positionRect.bottom + vOffset // top aligned to bottom
       }, {
-        left: positionRect.left - this.horizontalOffset - rect.width, // right aligned to left
-        top: positionRect.top + this.verticalOffset // top aligned to top
+        left: positionRect.left - hOffset - rect.width, // right aligned to left
+        top: positionRect.top + vOffset // top aligned to top
       }, {
-        left: positionRect.right + this.horizontalOffset, // left aligned to right
-        top: positionRect.top + this.verticalOffset // top aligned to top
+        left: positionRect.right + hOffset, // left aligned to right
+        top: positionRect.top + vOffset // top aligned to top
       }, {
-        left: positionRect.left + this.horizontalOffset, // left aligned to left
-        top: positionRect.top - this.verticalOffset - rect.height // bottom aligned to top
+        left: positionRect.left + hOffset, // left aligned to left
+        top: positionRect.top - vOffset - rect.height // bottom aligned to top
       }, {
-        left: positionRect.right - this.horizontalOffset - rect.width, // right aligned to right
-        top: positionRect.top - this.verticalOffset - rect.height // bottom aligned to top
+        left: positionRect.right - hOffset - rect.width, // right aligned to right
+        top: positionRect.top - vOffset - rect.height // bottom aligned to top
       }, {
-        left: positionRect.left - this.horizontalOffset - rect.width, // right aligned to left
-        top: positionRect.bottom - this.verticalOffset - rect.height // bottom aligned to bottom
+        left: positionRect.left - hOffset - rect.width, // right aligned to left
+        top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
       }, {
-        left: positionRect.right + this.horizontalOffset, // left aligned to right
-        top: positionRect.bottom - this.verticalOffset - rect.height // bottom aligned to bottom
+        left: positionRect.right + hOffset, // left aligned to right
+        top: positionRect.bottom - vOffset - rect.height // bottom aligned to bottom
       }];
 
       // Search for the point that minimizes the cropped area.
@@ -513,8 +509,8 @@ CSS properties               | Action
       // If it crops the whole element, better to position it at top-left
       var area = rect.width * rect.height;
       if (point.croppedArea >= area) {
-        point.left = positionRect.left + this.horizontalOffset;
-        point.top = positionRect.top + this.verticalOffset;
+        point.left = positionRect.left + hOffset;
+        point.top = positionRect.top + vOffset;
       }
       return point;
     },

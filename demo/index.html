@@ -49,7 +49,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 
 <body unresolved>
-
   <template is="dom-bind">
     <div class="sizer">
       <template is="dom-repeat" items="[[containers]]">
@@ -60,17 +59,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
 
     <simple-fit id="myFit" auto-fit-on-attach class="sized">
-      <button onclick="myFit.refit()">Refit</button>
-      <h2>Horizontal align</h2>
-      <button onclick="myFit.horizontalAlign=null">auto</button>
-      <button onclick="myFit.horizontalAlign='left'">left</button>
-      <button onclick="myFit.horizontalAlign='right'">right</button>
-      <h2>Vertical align</h2>
-      <button onclick="myFit.verticalAlign=null">auto</button>
-      <button onclick="myFit.verticalAlign='top'">top</button>
-      <button onclick="myFit.verticalAlign='bottom'">bottom</button>
+      <template is="dom-if" if="{{!autoPosition}}">
+        <h2>Horizontal align</h2>
+        <button on-tap="updateAlign" horizontal-align>auto</button>
+        <button on-tap="updateAlign" horizontal-align="left">left</button>
+        <button on-tap="updateAlign" horizontal-align="right">right</button>
+        <h2>Vertical align</h2>
+        <button on-tap="updateAlign" vertical-align>auto</button>
+        <button on-tap="updateAlign" vertical-align="top">top</button>
+        <button on-tap="updateAlign" vertical-align="bottom">bottom</button>
+      </template>
       <h2>Auto position</h2>
-      <button onclick="myFit.autoPosition = !myFit.autoPosition">Toggle</button>
+      <button on-tap="toggleAutoposition">Toggle</button>
     </simple-fit>
   </template>
 
@@ -84,6 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     t.containers = containers;
 
     t.positionTarget = document.body;
+    t.autoPosition = false;
     t.updatePositionTarget = function(e) {
       t.positionTarget.style.backgroundColor = ''
       var pt = Polymer.dom(e).rootTarget;
@@ -94,10 +95,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       t.positionTarget = pt;
       myFit.positionTarget = t.positionTarget;
+      t.refit();
     };
 
     var raf = null;
-    function refit() {
+    t.refit = function() {
       if (raf) {
         window.cancelAnimationFrame(raf);
       }
@@ -105,9 +107,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         raf = null;
         myFit.refit();
       });
-    }
-    window.addEventListener('resize', refit);
-    window.addEventListener('scroll', refit);
+    };
+    t.updateAlign = function(e) {
+      var target = Polymer.dom(e).rootTarget;
+      if (target.hasAttribute('horizontal-align')) {
+        myFit.horizontalAlign = target.getAttribute('horizontal-align');
+      }
+      if (target.hasAttribute('vertical-align')) {
+        myFit.verticalAlign = target.getAttribute('vertical-align');
+      }
+      t.refit();
+    };
+    t.toggleAutoposition = function() {
+      myFit.autoPosition = !myFit.autoPosition;
+      t.autoPosition = myFit.autoPosition;
+      t.refit();
+    };
+    window.addEventListener('resize', t.refit);
+    window.addEventListener('scroll', t.refit);
   </script>
 
 </body>
