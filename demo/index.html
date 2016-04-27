@@ -30,17 +30,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     .sized {
       padding: 20px;
+      overflow: auto;
     }
     .sizer {
-      width: 120vw;
-      height: 50vh;
+      width: 200vw;
     }
-    #container {
+    .container {
+      cursor: pointer;
+      text-align: center;
       display: inline-block;
-      margin: 25px;
-      width: 100vw;
+      box-sizing: border-box;
       padding: 50px;
       border: 1px solid;
+      margin: 5px;
     }
   </style>
 
@@ -48,37 +50,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <body unresolved>
 
-  <div class="sizer">
+  <template is="dom-bind">
+    <div class="sizer">
+      <template is="dom-repeat" items="[[containers]]">
+        <div class="container" on-tap="updatePositionTarget">
+          Position target <br>[[item]]
+        </div>
+      </template>
+    </div>
 
-  </div>
-  <div id="container">
-    <button onclick="myFit.positionTarget = container">Make this position target</button>
-    <button onclick="myFit.positionTarget = document.body">Reset position target</button>
-    <button onclick="myFit.refit()">Refit</button>
-  </div>
-  <div class="sizer">
-
-  </div>
-
-  <simple-fit id="myFit" auto-fit-on-attach class="sized">
-    <h2>Horizontal align</h2>
-    <button onclick="myFit.horizontalAlign=null">auto</button>
-    <button onclick="myFit.horizontalAlign='left'">left</button>
-    <button onclick="myFit.horizontalAlign='right'">right</button>
-    <h2>Vertical align</h2>
-    <button onclick="myFit.verticalAlign=null">auto</button>
-    <button onclick="myFit.verticalAlign='top'">top</button>
-    <button onclick="myFit.verticalAlign='bottom'">bottom</button>
-    <h2>Auto position</h2>
-    <button onclick="myFit.autoPosition = !myFit.autoPosition">Toggle</button>
-    <button onclick="myFit.refit()">Refit</button>
-  </simple-fit>
+    <simple-fit id="myFit" auto-fit-on-attach class="sized">
+      <button onclick="myFit.refit()">Refit</button>
+      <h2>Horizontal align</h2>
+      <button onclick="myFit.horizontalAlign=null">auto</button>
+      <button onclick="myFit.horizontalAlign='left'">left</button>
+      <button onclick="myFit.horizontalAlign='right'">right</button>
+      <h2>Vertical align</h2>
+      <button onclick="myFit.verticalAlign=null">auto</button>
+      <button onclick="myFit.verticalAlign='top'">top</button>
+      <button onclick="myFit.verticalAlign='bottom'">bottom</button>
+      <h2>Auto position</h2>
+      <button onclick="myFit.autoPosition = !myFit.autoPosition">Toggle</button>
+    </simple-fit>
+  </template>
 
 
   <script>
-    window.addEventListener('resize', function() {
-      myFit.refit();
-    });
+    var t = document.querySelector('template[is="dom-bind"]');
+    var containers = [];
+    for (var i = 0; i < 100; i++) {
+      containers.push(i);
+    }
+    t.containers = containers;
+
+    t.positionTarget = document.body;
+    t.updatePositionTarget = function(e) {
+      t.positionTarget.style.backgroundColor = ''
+      var pt = Polymer.dom(e).rootTarget;
+      if (t.positionTarget === pt) {
+        pt = document.body;
+      } else {
+        pt.style.backgroundColor = 'orange';
+      }
+      t.positionTarget = pt;
+      myFit.positionTarget = t.positionTarget;
+    };
+
+    var raf = null;
+    function refit() {
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+      }
+      raf = window.requestAnimationFrame(function() {
+        raf = null;
+        myFit.refit();
+      });
+    }
+    window.addEventListener('resize', refit);
+    window.addEventListener('scroll', refit);
   </script>
 
 </body>

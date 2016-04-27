@@ -254,11 +254,10 @@ CSS properties               | Action
         },
         positionedBy: {
           vertically: target.top !== 'auto' ? 'top' : (target.bottom !== 'auto' ?
-            'bottom' : this.verticalAlign),
+            'bottom' : null),
           horizontally: target.left !== 'auto' ? 'left' : (target.right !== 'auto' ?
-            'right' : this._localeHorizontalAlign)
+            'right' : null)
         },
-        thisRect: this.getBoundingClientRect(),
         sizedBy: {
           height: sizer.maxHeight !== 'none',
           width: sizer.maxWidth !== 'none'
@@ -311,39 +310,30 @@ CSS properties               | Action
         return;
       }
       this.style.position = 'fixed';
-      var positionRect = this._getNormalizedPositionRect();
-
-      if (this.autoPosition) {
-        // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
-        this.style.left = '0px';
-        this.style.top = '0px';
-        var rect = this.getBoundingClientRect();
-        var point = this._getAutopositionPoint(rect, positionRect);
-        this.style.left = point.left + 'px';
-        this.style.top = point.top + 'px';
-        return;
-      }
-
-      var hAlign = this._fitInfo.positionedBy.horizontally;
-      var vAlign = this._fitInfo.positionedBy.vertically;
       // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
-      if (hAlign) {
-        this.style[hAlign] = '0px';
-      }
-      if (vAlign) {
-        this.style[vAlign] = '0px';
-      }
+      this.style.left = '0px';
+      this.style.top = '0px';
       var rect = this.getBoundingClientRect();
-
-      if (hAlign) {
-        var horizontalValue = this._horizontalAlignTargetValue(rect, positionRect, hAlign === 'right');
-        this.style[hAlign] = horizontalValue + 'px';
+      var positionRect = this._getNormalizedPositionRect();
+      var point = this.autoPosition ? this._getAutopositionPoint(rect, positionRect) : this._getPositionPoint(rect, positionRect);
+      var maxWidth = Math.min(rect.width, this._fitWidth);
+      var maxHeight = Math.min(rect.height, this._fitHeight);
+      if (point.top < 0) {
+        maxHeight += point.top;
+        point.top = 0;
       }
-      if (vAlign) {
-        var verticalValue = this._verticalAlignTargetValue(rect, positionRect, vAlign === 'bottom');
-        this.style[vAlign] = verticalValue + 'px';
+      if (point.left < 0) {
+        maxWidth += point.left;
+        point.left = 0;
       }
-
+      if (rect.width > maxWidth) {
+        this.sizingTarget.style.maxWidth = maxWidth + 'px';
+      }
+      if (rect.height > maxHeight) {
+        this.sizingTarget.style.maxHeight = maxHeight + 'px';
+      }
+      this.style.left = point.left + 'px';
+      this.style.top = point.top + 'px';
     },
 
     /**
@@ -351,19 +341,20 @@ CSS properties               | Action
      * and/or `max-width`.
      */
     constrain: function() {
+      if (this.autoPosition || this.horizontalAlign || this.verticalAlign) {
+        return;
+      }
       var info = this._fitInfo;
-      if (!this.autoPosition) {
-        // position at (0px, 0px) if not already positioned, so we can measure the natural size.
-        if (!info.positionedBy.vertically) {
-          this.style.top = '0px';
-        }
-        if (!info.positionedBy.horizontally) {
-          this.style.left = '0px';
-        }
-        if (!info.positionedBy.vertically || !info.positionedBy.horizontally) {
-          // need position:fixed to properly size the element
-          this.style.position = 'fixed';
-        }
+      // position at (0px, 0px) if not already positioned, so we can measure the natural size.
+      if (!info.positionedBy.vertically) {
+        this.style.top = '0px';
+      }
+      if (!info.positionedBy.horizontally) {
+        this.style.left = '0px';
+      }
+      if (!info.positionedBy.vertically || !info.positionedBy.horizontally) {
+        // need position:fixed to properly size the element
+        this.style.position = 'fixed';
       }
 
       // need border-box for margin/padding
@@ -398,8 +389,11 @@ CSS properties               | Action
      * `position:fixed`.
      */
     center: function() {
+      if (this.autoPosition || this.horizontalAlign || this.verticalAlign) {
+        return;
+      }
       var positionedBy = this._fitInfo.positionedBy;
-      if (this.autoPosition || (positionedBy.vertically && positionedBy.horizontally)) {
+      if (positionedBy.vertically && positionedBy.horizontally) {
         // Already positioned.
         return;
       }
@@ -473,8 +467,6 @@ CSS properties               | Action
     },
 
     _getAutopositionPoint: function(rect, positionRect) {
-      var maxWidth = document.documentElement.offsetWidth;
-      var maxHeight = document.documentElement.offsetHeight;
       var points = [{
         left: positionRect.left + this.horizontalOffset, // left aligned to left
         top: positionRect.bottom + this.verticalOffset // top aligned to bottom
@@ -502,6 +494,8 @@ CSS properties               | Action
       }];
 
       // Search for the point that minimizes the cropped area.
+      var maxWidth = this._fitWidth;
+      var maxHeight = this._fitHeight;
       var point;
       for (var i = 0; i < points.length; i++) {
         var p = points[i];
@@ -523,6 +517,32 @@ CSS properties               | Action
         point.top = positionRect.top + this.verticalOffset;
       }
       return point;
+    },
+
+    _getPositionPoint: function(rect, positionRect) {
+      var hAlign = this._localeHorizontalAlign;
+      var vAlign = this.verticalAlign;
+
+      // rect.left should be 0 if no stacking context
+      var left = positionRect.left - rect.left;
+      // align to center
+      if (!hAlign) {
+        left += (positionRect.width - rect.width) / 2;
+      } else if (hAlign === 'right') {
+        left += (positionRect.width - rect.width);
+      }
+      // rect.top should be 0 if no stacking context
+      var top = positionRect.top - rect.top;
+      // align to center
+      if (!vAlign) {
+        top += (positionRect.height - rect.height) / 2;
+      } else if (vAlign === 'bottom') {
+        top += (positionRect.height - rect.height);
+      }
+      return {
+        left: left,
+        top: top
+      };
     },
 
     _getNormalizedPositionRect: function() {
