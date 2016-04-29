@@ -370,32 +370,31 @@ CSS properties               | Action
       var info = this._fitInfo;
       // position at (0px, 0px) if not already positioned, so we can measure the natural size.
       if (!info.positionedBy.vertically) {
+        this.style.position = 'fixed';
         this.style.top = '0px';
       }
       if (!info.positionedBy.horizontally) {
-        this.style.left = '0px';
-      }
-      if (!info.positionedBy.vertically || !info.positionedBy.horizontally) {
-        // need position:fixed to properly size the element
         this.style.position = 'fixed';
+        this.style.left = '0px';
       }
 
       // need border-box for margin/padding
       this.sizingTarget.style.boxSizing = 'border-box';
       // constrain the width and height if not already set
       var rect = this.getBoundingClientRect();
+      var fitRect = this.__getNormalizedRect(this.fitInto);
       if (!info.sizedBy.height) {
-        this._sizeDimension(rect, 'Height');
+        this._sizeDimension(rect, fitRect, 'Height');
       }
       if (!info.sizedBy.width) {
-        this._sizeDimension(rect, 'Width');
+        this._sizeDimension(rect, fitRect, 'Width');
       }
     },
 
-    _sizeDimension: function(rect, extent) {
+    _sizeDimension: function(rect, fitRect, extent) {
       var info = this._fitInfo;
       var positionedBy = extent === 'Width' ? info.positionedBy.horizontally : info.positionedBy.vertically;
-      var max = extent === 'Width' ? this._fitWidth : this._fitHeight;
+      var max = extent === 'Width' ? fitRect.width : fitRect.height;
       var start = extent === 'Width' ? 'left' : 'top';
       var end = extent === 'Width' ? 'right' : 'bottom';
       var flip = (positionedBy === end);
@@ -433,12 +432,13 @@ CSS properties               | Action
       }
       // It will take in consideration margins and transforms
       var rect = this.getBoundingClientRect();
+      var fitRect = this.__getNormalizedRect(this.fitInto);
       if (!positionedBy.vertically) {
-        var top = this._fitTop - rect.top + (this._fitHeight - rect.height) / 2;
+        var top = fitRect.top - rect.top + (fitRect.height - rect.height) / 2;
         this.style.top = top + 'px';
       }
       if (!positionedBy.horizontally) {
-        var left = this._fitLeft - rect.left + (this._fitWidth - rect.width) / 2;
+        var left = fitRect.left - rect.left + (fitRect.width - rect.width) / 2;
         this.style.left = left + 'px';
       }
     },
