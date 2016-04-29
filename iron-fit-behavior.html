@@ -247,9 +247,12 @@ CSS properties               | Action
         inlineStyle: {
           top: this.style.top || '',
           left: this.style.left || '',
-          bottom: this.style.bottom || '',
-          right: this.style.right || '',
           position: this.style.position || ''
+        },
+        sizerInlineStyle: {
+          maxWidth: this.sizingTarget.style.maxWidth || '',
+          maxHeight: this.sizingTarget.style.maxHeight || '',
+          boxSizing: this.sizingTarget.style.boxSizing || ''
         },
         positionedBy: {
           vertically: target.top !== 'auto' ? 'top' : (target.bottom !== 'auto' ?
@@ -275,18 +278,13 @@ CSS properties               | Action
      * the memoized data.
      */
     resetFit: function() {
-      if (!this._fitInfo || !this._fitInfo.sizedBy.width) {
-        this.sizingTarget.style.maxWidth = '';
+      var info = this._fitInfo || {};
+      for (var property in info.sizerInlineStyle) {
+        this.sizingTarget.style[property] = info.sizerInlineStyle[property];
       }
-      if (!this._fitInfo || !this._fitInfo.sizedBy.height) {
-        this.sizingTarget.style.maxHeight = '';
+      for (var property in info.inlineStyle) {
+        this.style[property] = info.inlineStyle[property];
       }
-
-      this.style.top = this._fitInfo ? this._fitInfo.inlineStyle.top : '';
-      this.style.left = this._fitInfo ? this._fitInfo.inlineStyle.left : '';
-      this.style.bottom = this._fitInfo ? this._fitInfo.inlineStyle.bottom : '';
-      this.style.right = this._fitInfo ? this._fitInfo.inlineStyle.right : '';
-      this.style.position = this._fitInfo ? this._fitInfo.inlineStyle.position : '';
 
       this._fitInfo = null;
     },
@@ -313,79 +311,52 @@ CSS properties               | Action
       // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
       this.style.left = '0px';
       this.style.top = '0px';
-      //TODO check if can be done elsewhere
-      this.sizingTarget.style.maxWidth = '';
-      this.sizingTarget.style.maxHeight = '';
 
       var rect = this.getBoundingClientRect();
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
-      var point = {};
-
       var alignRight = this._localeHorizontalAlign === 'right' || (this._localeHorizontalAlign === 'auto' && positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2);
       var alignBottom = this.verticalAlign === 'bottom' || (this.verticalAlign === 'auto' && positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2);
 
-      var horizontalOverlap = true;
-      var verticalOverlap = true;
+      var top = alignBottom ? positionRect.bottom - rect.height - this.verticalOffset : positionRect.top + this.verticalOffset;
+      var left = alignRight ? positionRect.right - rect.width - this.horizontalOffset : positionRect.left + this.horizontalOffset;
       if (this.noOverlap) {
-        var horizontalSpace = alignRight ? positionRect.left - rect.width - this.horizontalOffset : fitRect.width - positionRect.right - rect.width - this.horizontalOffset;
-        var verticalSpace = alignBottom ? positionRect.top - rect.height - this.verticalOffset : fitRect.height - positionRect.bottom - rect.height - this.verticalOffset;
-        var verticalOppositeSpace = alignBottom ? positionRect.bottom - rect.height - this.verticalOffset : positionRect.top + this.verticalOffset;
-        verticalOverlap = (horizontalSpace >= 0 && verticalOppositeSpace >= 0) || horizontalSpace >= verticalSpace;
-        horizontalOverlap = !verticalOverlap;
+        var verticalCrop = Math.min(0, top) + Math.min(0, fitRect.height - (top + rect.height));
+        var horizontalCrop = Math.min(0, left) + Math.min(0, fitRect.width - (left + rect.width));
+        if (verticalCrop === 0 || (horizontalCrop < 0 && horizontalCrop < verticalCrop)) {
+          left += positionRect.width * (alignRight ? -1 : 1);
+        } else {
+          top += positionRect.height * (alignBottom ? -1 : 1);
+        }
       }
 
-      if (alignRight) {
-        point.right = horizontalOverlap ? positionRect.right : positionRect.left;
-        point.right -= this.horizontalOffset;
-        point.left = point.right - rect.width;
-      } else {
-        point.left = horizontalOverlap ? positionRect.left : positionRect.right;
-        point.left += this.horizontalOffset;
-        point.right = point.left + rect.width;
-      }
-      if (alignBottom) {
-        point.bottom = verticalOverlap ? positionRect.bottom : positionRect.top;
-        point.bottom -= this.verticalOffset;
-        point.top = point.bottom - rect.height;
-      } else {
-        point.top = verticalOverlap ? positionRect.top : positionRect.bottom;
-        point.top += this.verticalOffset;
-        point.bottom = point.top + rect.height;
-      }
+      var right = left + rect.width;
+      var bottom = top + rect.height;
 
-      // Ensure is visible until positionRect is visible.
-      // if (point.top < 0) {
-      //   point.top = point.top >= -positionRect.height ? 0 : point.top + positionRect.height;
-      // } else if (point.top + rect.height > fitRect.height) {
-      //   point.top = Math.max(positionRect.top - rect.height, fitRect.height - rect.height);
-      // }
-      // if (point.left < 0) {
-      //   point.left = point.left >= -positionRect.width ? 0 : point.left + positionRect.width;
-      // } else if (point.left + rect.width > fitRect.width) {
-      //   point.left = Math.max(positionRect.left - rect.width, fitRect.width - rect.width);
-      // }
+      left = Math.max(left, 0);
+      top = Math.max(top, 0);
 
-      point.left = Math.max(point.left, 0);
-      point.top = Math.max(point.top, 0);
+      var maxWidth = Math.min(fitRect.right, right) - left;
+      var maxHeight = Math.min(fitRect.bottom, bottom) - top;
 
-      // TODO handle min-height
-      var maxWidth = Math.min(fitRect.right, point.right) - point.left;
-      if (point.right < this.horizontalOffset) {
-        point.left = -9999;
+      if (right < this.horizontalOffset) {
+        left = -9999;
         maxWidth = 0;
       }
-      var maxHeight = Math.min(fitRect.bottom, point.bottom) - point.top;
-      if (point.bottom < this.verticalOffset) {
-        point.top = -9999;
+      if (bottom < this.verticalOffset) {
+        top = -9999;
         maxHeight = 0;
       }
 
+      // Need border-box for margin/padding.
+      this.sizingTarget.style.boxSizing = 'border-box';
       this.sizingTarget.style.maxWidth = maxWidth + 'px';
       this.sizingTarget.style.maxHeight = maxHeight + 'px';
-      this.style.left = (point.left - rect.left) + 'px';
-      this.style.top = (point.top - rect.top) + 'px';
+
+      // Remove the offset caused by any stacking context.
+      this.style.left = (left - rect.left) + 'px';
+      this.style.top = (top - rect.top) + 'px';
     },
 
     /**
