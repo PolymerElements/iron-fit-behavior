@@ -318,20 +318,33 @@ CSS properties               | Action
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
-      var alignRight = this._localeHorizontalAlign === 'right' || (this._localeHorizontalAlign === 'auto' && positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2);
-      var alignBottom = this.verticalAlign === 'bottom' || (this.verticalAlign === 'auto' && positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2);
+      var alignRight, alignBottom;
+      if (this.horizontalAlign === 'auto') {
+        alignRight = positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2 ||
+          (!this.noOverlap && positionRect.left < 0 && positionRect.right - rect.width > positionRect.left);
+      } else {
+        alignRight = this._localeHorizontalAlign === 'right';
+      }
+      if (this.verticalAlign === 'auto') {
+        alignBottom = positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2 ||
+          (!this.noOverlap && positionRect.top < 0 && positionRect.bottom - rect.height > positionRect.top);
+      } else {
+        alignBottom = this.verticalAlign === 'bottom';
+      }
 
-      var top = alignBottom ? positionRect.bottom - rect.height - this.verticalOffset : positionRect.top + this.verticalOffset;
-      var left = alignRight ? positionRect.right - rect.width - this.horizontalOffset : positionRect.left + this.horizontalOffset;
+      var top = alignBottom ? positionRect.bottom - rect.height : positionRect.top;
+      var left = alignRight ? positionRect.right - rect.width : positionRect.left;
       if (this.noOverlap) {
-        var verticalCrop = Math.min(0, top) + Math.min(0, fitRect.height - (top + rect.height));
-        var horizontalCrop = Math.min(0, left) + Math.min(0, fitRect.width - (left + rect.width));
+        var verticalCrop = Math.min(0, top) + Math.min(0, fitRect.bottom - (top + rect.height));
+        var horizontalCrop = Math.min(0, left) + Math.min(0, fitRect.right - (left + rect.width));
         if (verticalCrop === 0 || (horizontalCrop < 0 && horizontalCrop < verticalCrop)) {
           left += positionRect.width * (alignRight ? -1 : 1);
         } else {
           top += positionRect.height * (alignBottom ? -1 : 1);
         }
       }
+      top += this.verticalOffset * (alignBottom ? -1 : 1);
+      left += this.horizontalOffset * (alignRight ? -1 : 1);
 
       var right = left + rect.width;
       var bottom = top + rect.height;
