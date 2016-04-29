@@ -323,8 +323,8 @@ CSS properties               | Action
 
       var point = {};
 
-      var alignRight = this._localeHorizontalAlign === 'right' ||  positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2;
-      var alignBottom = this.verticalAlign === 'bottom' || positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2;
+      var alignRight = this._localeHorizontalAlign === 'right' || (this._localeHorizontalAlign === 'auto' && positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2);
+      var alignBottom = this.verticalAlign === 'bottom' || (this.verticalAlign === 'auto' && positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2);
 
       var horizontalOverlap = true;
       var verticalOverlap = true;
