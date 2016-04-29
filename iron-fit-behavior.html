@@ -308,6 +308,8 @@ CSS properties               | Action
       }
 
       this.style.position = 'fixed';
+      // Need border-box for margin/padding.
+      this.sizingTarget.style.boxSizing = 'border-box';
       // Set to 0, 0 in order to discover any offset caused by parent stacking contexts.
       this.style.left = '0px';
       this.style.top = '0px';
@@ -349,8 +351,6 @@ CSS properties               | Action
         maxHeight = 0;
       }
 
-      // Need border-box for margin/padding.
-      this.sizingTarget.style.boxSizing = 'border-box';
       this.sizingTarget.style.maxWidth = maxWidth + 'px';
       this.sizingTarget.style.maxHeight = maxHeight + 'px';
 
