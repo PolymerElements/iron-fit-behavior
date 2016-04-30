@@ -318,33 +318,34 @@ CSS properties               | Action
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
-      var alignRight, alignBottom;
-      if (this.horizontalAlign === 'auto') {
-        alignRight = positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2 ||
-          (!this.noOverlap && positionRect.left < 0 && positionRect.right - rect.width > positionRect.left);
-      } else {
-        alignRight = this._localeHorizontalAlign === 'right';
-      }
-      if (this.verticalAlign === 'auto') {
-        alignBottom = positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2 ||
-          (!this.noOverlap && positionRect.top < 0 && positionRect.bottom - rect.height > positionRect.top);
-      } else {
-        alignBottom = this.verticalAlign === 'bottom';
-      }
+      var alignRight = this.__isAlignRight(this._localeHorizontalAlign, rect, positionRect, fitRect);
+      var alignBottom = this.__isAlignBottom(this.verticalAlign, rect, positionRect, fitRect);
 
-      var top = alignBottom ? positionRect.bottom - rect.height : positionRect.top;
-      var left = alignRight ? positionRect.right - rect.width : positionRect.left;
+      var top = alignBottom ? positionRect.bottom - rect.height - this.verticalOffset : positionRect.top + this.verticalOffset;
+      var left = alignRight ? positionRect.right - rect.width - this.horizontalOffset : positionRect.left + this.horizontalOffset;
+
       if (this.noOverlap) {
-        var verticalCrop = Math.min(0, top) + Math.min(0, fitRect.bottom - (top + rect.height));
-        var horizontalCrop = Math.min(0, left) + Math.min(0, fitRect.right - (left + rect.width));
-        if (verticalCrop === 0 || (horizontalCrop < 0 && horizontalCrop < verticalCrop)) {
-          left += positionRect.width * (alignRight ? -1 : 1);
+        // We can overlap one of the dimensions, choose the one that minimizes the cropped area.
+        var noOverlapLeft = left + positionRect.width * (alignRight ? -1 : 1);
+        var noOverlapTop = top + positionRect.height * (alignBottom ? -1 : 1);
+        var areaOverlapLeft = this.__getCroppedArea({
+          top: noOverlapTop,
+          left: left,
+          width: rect.width,
+          height: rect.height
+        }, fitRect);
+        var areaOverlapTop = this.__getCroppedArea({
+          top: top,
+          left: noOverlapLeft,
+          width: rect.width,
+          height: rect.height
+        }, fitRect);
+        if (areaOverlapLeft < areaOverlapTop) {
+          left = noOverlapLeft;
         } else {
-          top += positionRect.height * (alignBottom ? -1 : 1);
+          top = noOverlapTop;
         }
       }
-      top += this.verticalOffset * (alignBottom ? -1 : 1);
-      left += this.horizontalOffset * (alignRight ? -1 : 1);
 
       var right = left + rect.width;
       var bottom = top + rect.height;
@@ -468,6 +469,34 @@ CSS properties               | Action
         };
       }
       return target.getBoundingClientRect();
+    },
+
+    __isAlignRight: function(hAlign, rect, positionRect, fitRect) {
+      if (hAlign === 'right') {
+        return true;
+      }
+      if (hAlign === 'auto') {
+        return positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2 ||
+          (!this.noOverlap && positionRect.left < 0 && positionRect.right - rect.width > positionRect.left);
+      }
+      return false;
+    },
+
+    __isAlignBottom: function(vAlign, rect, positionRect, fitRect) {
+      if (vAlign === 'bottom') {
+        return true;
+      }
+      if (vAlign === 'auto') {
+        return positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2 ||
+          (!this.noOverlap && positionRect.top < 0 && positionRect.bottom - rect.height > positionRect.top);
+      }
+      return false;
+    },
+
+    __getCroppedArea: function(rect, fitRect) {
+      var verticalCrop = Math.min(0, rect.top) + Math.min(0, fitRect.bottom - (rect.top + rect.height));
+      var horizontalCrop = Math.min(0, rect.left) + Math.min(0, fitRect.right - (rect.left + rect.width));
+      return verticalCrop * rect.width + horizontalCrop * rect.height;
     }
 
   };
