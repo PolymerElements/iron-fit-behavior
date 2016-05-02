@@ -81,29 +81,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </simple-fit>
         <script>
           var defaultTarget = Polymer.dom(myFit).parentNode;
-          var t = document.querySelector('template[is="dom-bind"]');
+          var template = document.querySelector('template[is="dom-bind"]');
 
-          t.containers = new Array(30);
+          template.containers = new Array(30);
 
-          t.updatePositionTarget = function(e) {
+          template.updatePositionTarget = function(e) {
             var target = Polymer.dom(e).rootTarget;
             target = myFit.positionTarget === target ? defaultTarget : target;
             myFit.positionTarget.style.backgroundColor = '';
             target.style.backgroundColor = 'orange';
             myFit.positionTarget = target;
-            t.refit();
+            template.refit();
           };
 
-          t._raf = null;
-          t.refit = function() {
-            t._raf && window.cancelAnimationFrame(t._raf);
-            t._raf = window.requestAnimationFrame(function() {
-              t._raf = null;
+          template._raf = null;
+          template.refit = function() {
+            template._raf && window.cancelAnimationFrame(template._raf);
+            template._raf = window.requestAnimationFrame(function() {
+              template._raf = null;
               myFit.refit();
             });
           };
 
-          t.updateAlign = function(e) {
+          template.updateAlign = function(e) {
             var target = Polymer.dom(e).rootTarget;
             if (target.hasAttribute('horizontal-align')) {
               myFit.horizontalAlign = target.getAttribute('horizontal-align');
@@ -111,17 +111,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             if (target.hasAttribute('vertical-align')) {
               myFit.verticalAlign = target.getAttribute('vertical-align');
             }
-            t.refit();
+            template.refit();
           };
 
-          t.toggleNoOverlap = function() {
+          template.toggleNoOverlap = function() {
             myFit.noOverlap = !myFit.noOverlap;
-            t.refit();
+            template.refit();
           };
 
           // Listen for resize and scroll on window.
-          window.addEventListener('resize', t.refit);
-          window.addEventListener('scroll', t.refit);
+          window.addEventListener('resize', template.refit);
+          window.addEventListener('scroll', template.refit);
         </script>
       </template>
     </template>
