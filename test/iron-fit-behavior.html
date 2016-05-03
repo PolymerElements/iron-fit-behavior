@@ -407,11 +407,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       suite('horizontal/vertical align', function() {
         var parent, parentRect;
         var el, elRect;
+        var fitRect = {
+          left: 0,
+          top: 0,
+          right: window.innerWidth,
+          bottom: window.innerHeight,
+          width: window.innerWidth,
+          height: window.innerHeight
+        };
+
         setup(function() {
           parent = fixture('constrain-target');
           parentRect = parent.getBoundingClientRect();
           el = Polymer.dom(parent).querySelector('.el');
           elRect = el.getBoundingClientRect();
+        });
+
+        test('intersects works', function() {
+          var base = {top: 0, bottom: 1, left:0, right: 1};
+          assert.isTrue(intersects(base, base), 'intersects itself');
+          assert.isFalse(intersects(base, {top:1, bottom: 2, left: 0, right: 1}), 'no intersect on edge');
+          assert.isFalse(intersects(base, {top:-2, bottom: -1, left: 0, right: 1}), 'no intersect on edge (negative values)');
+          assert.isFalse(intersects(base, {top:2, bottom: 3, left: 0, right: 1}), 'no intersect');
         });
 
         test('top', function() {
@@ -422,13 +439,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(rect.height, elRect.height, 'no cropping');
         });
 
-        test('top, update height', function() {
+        test('top, update max-height', function() {
           parent.style.top = '-100px';
           el.verticalAlign = 'top';
           el.refit();
           var rect = el.getBoundingClientRect();
           assert.equal(rect.top, 0, 'top ok');
           assert.equal(rect.height, elRect.height - 100, 'height ok');
+        });
+
+        test('top, handle min-height', function() {
+          parent.style.top = '-100px';
+          el.verticalAlign = 'top';
+          el.style.minHeight = '200px';
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          assert.isFalse(intersects(rect, fitRect), 'not visible');
         });
 
         test('top with offset', function() {
@@ -457,13 +483,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(rect.height, elRect.height, 'no cropping');
         });
 
-        test('bottom, update height', function() {
+        test('bottom, update max-height', function() {
           parent.style.top = (100 - parentRect.height) + 'px';
           el.verticalAlign = 'bottom';
           el.refit();
           var rect = el.getBoundingClientRect();
           assert.equal(rect.bottom, 100, 'bottom ok');
           assert.equal(rect.height, 100, 'height ok');
+        });
+
+        test('bottom, handle min-height', function() {
+          parent.style.top = (100 - parentRect.height) + 'px';
+          el.verticalAlign = 'bottom';
+          el.style.minHeight = '200px';
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          assert.isFalse(intersects(rect, fitRect), 'not visible');
         });
 
         test('bottom with offset', function() {
@@ -535,13 +570,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(rect.width, elRect.width, 'no cropping');
         });
 
-        test('left, update width', function() {
+        test('left, update max-width', function() {
           parent.style.left = '-100px';
           el.horizontalAlign = 'left';
           el.refit();
           var rect = el.getBoundingClientRect();
           assert.equal(rect.left, 0, 'left ok');
           assert.equal(rect.width, elRect.width - 100, 'width ok');
+        });
+
+        test('left, handle min-width', function() {
+          parent.style.left = '-100px';
+          el.horizontalAlign = 'left';
+          el.style.minWidth = '200px';
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          assert.isFalse(intersects(rect, fitRect), 'not visible');
         });
 
         test('left with offset', function() {
@@ -573,13 +617,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(rect.width, elRect.width, 'no cropping');
         });
 
-        test('right, update width', function() {
+        test('right, update max-width', function() {
           parent.style.left = (100 - parentRect.width) + 'px';
           el.horizontalAlign = 'right';
           el.refit();
           var rect = el.getBoundingClientRect();
           assert.equal(rect.right, 100, 'right ok');
           assert.equal(rect.width, 100, 'width ok');
+        });
+
+        test('right, handle min-width', function() {
+          parent.style.left = (100 - parentRect.width) + 'px';
+          el.horizontalAlign = 'right';
+          el.style.minWidth = '200px';
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          assert.isFalse(intersects(rect, fitRect), 'not visible');
         });
 
         test('right with offset', function() {

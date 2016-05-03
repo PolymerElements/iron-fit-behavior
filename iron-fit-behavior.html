@@ -262,7 +262,9 @@ CSS properties               | Action
         },
         sizedBy: {
           height: sizer.maxHeight !== 'none',
-          width: sizer.maxWidth !== 'none'
+          width: sizer.maxWidth !== 'none',
+          minWidth: parseInt(sizer.minWidth, 10) || 0,
+          minHeight: parseInt(sizer.minHeight, 10) || 0
         },
         margin: {
           top: parseInt(target.marginTop, 10) || 0,
@@ -356,11 +358,14 @@ CSS properties               | Action
       var maxWidth = Math.min(fitRect.right, right) - left;
       var maxHeight = Math.min(fitRect.bottom, bottom) - top;
 
-      if (right < this.horizontalOffset) {
+      var minWidth = this._fitInfo.sizedBy.minWidth;
+      var minHeight = this._fitInfo.sizedBy.minHeight;
+
+      if (maxWidth < minWidth || right < minWidth) {
         left = -9999;
         maxWidth = 0;
       }
-      if (bottom < this.verticalOffset) {
+      if (maxHeight < minHeight || bottom < minHeight) {
         top = -9999;
         maxHeight = 0;
       }
