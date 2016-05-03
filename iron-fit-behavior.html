@@ -401,23 +401,30 @@ CSS properties               | Action
       this.sizingTarget.style.boxSizing = 'border-box';
       // constrain the width and height if not already set
       var rect = this.getBoundingClientRect();
-      var fitRect = this.__getNormalizedRect(this.fitInto);
       if (!info.sizedBy.height) {
-        this._sizeDimension(rect, fitRect, 'Height');
+        this.__sizeDimension(rect, info.positionedBy.vertically, 'top', 'bottom', 'Height');
       }
       if (!info.sizedBy.width) {
-        this._sizeDimension(rect, fitRect, 'Width');
+        this.__sizeDimension(rect, info.positionedBy.horizontally, 'left', 'right', 'Width');
       }
     },
 
-    _sizeDimension: function(rect, fitRect, extent) {
-      var info = this._fitInfo;
-      var positionedBy = extent === 'Width' ? info.positionedBy.horizontally : info.positionedBy.vertically;
-      var max = extent === 'Width' ? fitRect.width : fitRect.height;
-      var start = extent === 'Width' ? 'left' : 'top';
-      var end = extent === 'Width' ? 'right' : 'bottom';
-      var flip = (positionedBy === end);
+    /**
+     * @protected
+     * @deprecated
+     */
+    _sizeDimension: function(rect, positionedBy, start, end, extent) {
+      this.__sizeDimension(rect, positionedBy, start, end, extent);
+    },
 
+    /**
+     * @private
+     */
+    __sizeDimension: function(rect, positionedBy, start, end, extent) {
+      var info = this._fitInfo;
+      var fitRect = this.__getNormalizedRect(this.fitInto);
+      var max = extent === 'Width' ? fitRect.width : fitRect.height;
+      var flip = (positionedBy === end);
       var offset = flip ? max - rect[end] : rect[start];
       var margin = info.margin[flip ? start : end];
       var offsetExtent = 'offset' + extent;
