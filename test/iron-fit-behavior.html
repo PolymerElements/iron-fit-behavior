@@ -39,11 +39,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .sized-x {
-        width: 200px;
+        width: 100px;
       }
 
       .sized-y {
-        height: 200px;
+        height: 100px;
       }
 
       .positioned-left {
@@ -81,9 +81,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .constrain {
         position: fixed;
         top: 20px;
-        left: 100px;
-        width: 300px;
-        height: 300px;
+        left: 20px;
+        width: 150px;
+        height: 150px;
         border: 1px solid black;
         box-sizing: border-box;
       }
@@ -441,6 +441,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('element is aligned to the positionTarget top without overlapping it', function() {
+            // Allow enough space on the parent's bottom & right.
+            parent.style.width = '10px';
+            parent.style.height = '10px';
+            parentRect = parent.getBoundingClientRect();
             el.verticalAlign = 'top';
             el.noOverlap = true;
             el.refit();
@@ -459,18 +463,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('max-height is updated', function() {
-            parent.style.top = '-100px';
+            parent.style.top = '-10px';
             el.verticalAlign = 'top';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.equal(rect.top, 0, 'top ok');
-            assert.equal(rect.height, elRect.height - 100, 'height ok');
+            assert.isBelow(rect.height, elRect.height, 'height ok');
           });
 
           test('min-height is respected: element is hidden if does not have enough height', function() {
-            parent.style.top = '-100px';
+            parent.style.top = '-10px';
             el.verticalAlign = 'top';
-            el.style.minHeight = '200px';
+            el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.isFalse(intersects(rect, fitRect), 'not visible');
@@ -514,9 +518,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('min-height is respected: element is hidden if does not have enough height', function() {
-            parent.style.top = (100 - parentRect.height) + 'px';
+            parent.style.top = (elRect.height - 10 - parentRect.height) + 'px';
             el.verticalAlign = 'bottom';
-            el.style.minHeight = '200px';
+            el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.isFalse(intersects(rect, fitRect), 'not visible');
@@ -533,6 +537,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('element is aligned to the positionTarget top without overlapping it', function() {
+            // Allow enough space on the parent's bottom & right.
+            parent.style.width = '10px';
+            parent.style.height = '10px';
+            parentRect = parent.getBoundingClientRect();
             el.verticalAlign = 'auto';
             el.noOverlap = true;
             el.refit();
@@ -544,7 +552,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           test('bottom is preferred to top if it diminishes the cropped area', function() {
             // This would cause a cropping of the element, so it should automatically
             // align to the bottom to avoid it.
-            parent.style.top = '-50px';
+            parent.style.top = '-10px';
             parentRect = parent.getBoundingClientRect();
             el.verticalAlign = 'auto';
             el.refit();
@@ -556,7 +564,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           test('bottom is preferred to top if it diminishes the cropped area, without overlapping positionTarget', function() {
             // This would cause a cropping of the element, so it should automatically
             // align to the bottom to avoid it.
-            parent.style.top = '-100px';
+            parent.style.top = '-10px';
             parentRect = parent.getBoundingClientRect();
             el.verticalAlign = 'auto';
             el.noOverlap = true;
@@ -577,7 +585,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('element is aligned to the positionTarget left without overlapping it', function() {
-            // Make parent smaller so there is space for the element.
+            // Make space at the parent's right.
             parent.style.width = '10px';
             parentRect = parent.getBoundingClientRect();
             el.horizontalAlign = 'left';
@@ -598,18 +606,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('element max-width is updated', function() {
-            parent.style.left = '-100px';
+            parent.style.left = '-10px';
             el.horizontalAlign = 'left';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.equal(rect.left, 0, 'left ok');
-            assert.equal(rect.width, elRect.width - 100, 'width ok');
+            assert.isBelow(rect.width, elRect.width, 'width ok');
           });
 
           test('min-width is respected: element is hidden if does not have enough width', function() {
-            parent.style.left = '-100px';
+            parent.style.left = '-10px';
+            el.style.minWidth = elRect.width + 'px';
             el.horizontalAlign = 'left';
-            el.style.minWidth = '200px';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.isFalse(intersects(rect, fitRect), 'not visible');
@@ -626,8 +634,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('element is aligned to the positionTarget right without overlapping it', function() {
-            // Push parent so there is space for the element.
-            parent.style.left = '400px';
+            // Make space at the parent's left.
+            parent.style.left = elRect.width + 'px';
             parentRect = parent.getBoundingClientRect();
             el.horizontalAlign = 'right';
             el.noOverlap = true;
@@ -656,9 +664,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
 
           test('min-width is respected: element is hidden if does not have enough width', function() {
-            parent.style.left = (100 - parentRect.width) + 'px';
+            parent.style.left = (elRect.width - 10 - parentRect.width) + 'px';
             el.horizontalAlign = 'right';
-            el.style.minWidth = '200px';
+            el.style.minWidth = elRect.width + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
             assert.isFalse(intersects(rect, fitRect), 'not visible');
@@ -677,7 +685,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           test('element is aligned to the positionTarget left without overlapping positionTarget', function() {
             // Make space at the parent's left.
-            parent.style.left = '300px';
+            parent.style.left = elRect.width + 'px';
             parentRect = parent.getBoundingClientRect();
             el.horizontalAlign = 'auto';
             el.noOverlap = true;
@@ -690,7 +698,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           test('right is preferred to left if it diminishes the cropped area', function() {
             // This would cause a cropping of the element, so it should automatically
             // align to the right to avoid it.
-            parent.style.left = '-50px';
+            parent.style.left = '-10px';
             parentRect = parent.getBoundingClientRect();
             el.horizontalAlign = 'auto';
             el.refit();
@@ -701,7 +709,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           test('right is preferred to left if it diminishes the cropped area, without overlapping positionTarget', function() {
             // Make space at the parent's right.
-            parent.style.left = '-100px';
+            parent.style.width = '10px';
             parentRect = parent.getBoundingClientRect();
             el.horizontalAlign = 'auto';
             el.noOverlap = true;
