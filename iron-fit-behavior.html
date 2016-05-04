@@ -205,7 +205,7 @@ Use `noOverlap` to position the element around another element without overlappi
     get _defaultPositionTarget() {
       var parent = Polymer.dom(this).parentNode;
 
-      if (parent.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+      if (parent && parent.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
         parent = parent.host;
       }
 
@@ -336,7 +336,22 @@ Use `noOverlap` to position the element around another element without overlappi
       this.style.left = '0px';
       this.style.top = '0px';
 
-      var rect = this.getBoundingClientRect();
+      var t = this.getBoundingClientRect();
+      // Need a copy in order to be able to modify the values.
+      var rect = {
+        top: t.top,
+        bottom: t.bottom,
+        left: t.left,
+        right: t.right,
+        width: t.width,
+        height: t.height
+      };
+      // Consider the margin as part of the rect, we'll remove it later.
+      rect.width += (this._fitInfo.margin.left + this._fitInfo.margin.right);
+      rect.height += (this._fitInfo.margin.top + this._fitInfo.margin.bottom);
+      rect.bottom = rect.top + rect.height;
+      rect.right = rect.left + rect.width;
+
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
@@ -369,14 +384,20 @@ Use `noOverlap` to position the element around another element without overlappi
         }
       }
 
+      // Remove the margin.
+      rect.width -= (this._fitInfo.margin.left + this._fitInfo.margin.right);
+      rect.height -= (this._fitInfo.margin.top + this._fitInfo.margin.bottom);
+      left += this._fitInfo.margin.left;
+      top += this._fitInfo.margin.top;
+
       var right = left + rect.width;
       var bottom = top + rect.height;
 
-      left = Math.max(left, 0);
-      top = Math.max(top, 0);
+      left = Math.max(left, this._fitInfo.margin.left);
+      top = Math.max(top, this._fitInfo.margin.top);
 
-      var maxWidth = Math.min(fitRect.right, right) - left;
-      var maxHeight = Math.min(fitRect.bottom, bottom) - top;
+      var maxWidth = Math.min(fitRect.right - this._fitInfo.margin.right, right) - left;
+      var maxHeight = Math.min(fitRect.bottom - this._fitInfo.margin.bottom, bottom) - top;
 
       var minWidth = this._fitInfo.sizedBy.minWidth;
       var minHeight = this._fitInfo.sizedBy.minHeight;
