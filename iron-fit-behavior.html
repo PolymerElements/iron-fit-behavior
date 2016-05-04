@@ -105,18 +105,8 @@ Use `noOverlap` to position the element around another element without overlappi
       },
 
       /**
-       * A pixel value that will be added to the position calculated for the
-       * given `horizontalAlign`, in the direction of alignment. You can think
-       * of it as increasing or decreasing the distance to the side of the
-       * screen given by `horizontalAlign`.
-       *
-       * If `horizontalAlign` is "left", this offset will increase or decrease
-       * the distance to the left side of the screen: a negative offset will
-       * move the element to the left; a positive one, to the right.
-       *
-       * Conversely if `horizontalAlign` is "right", this offset will increase
-       * or decrease the distance to the right side of the screen: a negative
-       * offset will move the element to the right; a positive one, to the left.
+       * The same as setting margin-left and margin-right css properties.
+       * @deprecated
        */
       horizontalOffset: {
         type: Number,
@@ -125,18 +115,8 @@ Use `noOverlap` to position the element around another element without overlappi
       },
 
       /**
-       * A pixel value that will be added to the position calculated for the
-       * given `verticalAlign`, in the direction of alignment. You can think
-       * of it as increasing or decreasing the distance to the side of the
-       * screen given by `verticalAlign`.
-       *
-       * If `verticalAlign` is "top", this offset will increase or decrease
-       * the distance to the top side of the screen: a negative offset will
-       * move the element upwards; a positive one, downwards.
-       *
-       * Conversely if `verticalAlign` is "bottom", this offset will increase
-       * or decrease the distance to the bottom side of the screen: a negative
-       * offset will move the element downwards; a positive one, upwards.
+       * The same as setting margin-top and margin-bottom css properties.
+       * @deprecated
        */
       verticalOffset: {
         type: Number,
@@ -262,6 +242,7 @@ Use `noOverlap` to position the element around another element without overlappi
       }
       var target = window.getComputedStyle(this);
       var sizer = window.getComputedStyle(this.sizingTarget);
+
       this._fitInfo = {
         inlineStyle: {
           top: this.style.top || '',
@@ -292,6 +273,20 @@ Use `noOverlap` to position the element around another element without overlappi
           left: parseInt(target.marginLeft, 10) || 0
         }
       };
+
+      // Support these properties until they are removed.
+      if (this.verticalOffset) {
+        this._fitInfo.margin.top = this._fitInfo.margin.bottom = this.verticalOffset;
+        this._fitInfo.inlineStyle.marginTop = this.style.marginTop || '';
+        this._fitInfo.inlineStyle.marginBottom = this.style.marginBottom || '';
+        this.style.marginTop = this.style.marginBottom = this.verticalOffset + 'px';
+      }
+      if (this.horizontalOffset) {
+        this._fitInfo.margin.left = this._fitInfo.margin.right = this.horizontalOffset;
+        this._fitInfo.inlineStyle.marginLeft = this.style.marginLeft || '';
+        this._fitInfo.inlineStyle.marginRight = this.style.marginRight || '';
+        this.style.marginLeft = this.style.marginRight = this.horizontalOffset + 'px';
+      }
     },
 
     /**
@@ -358,8 +353,8 @@ Use `noOverlap` to position the element around another element without overlappi
       var alignRight = this.__isAlignRight(this._localeHorizontalAlign, rect, positionRect, fitRect);
       var alignBottom = this.__isAlignBottom(this.verticalAlign, rect, positionRect, fitRect);
 
-      var top = alignBottom ? positionRect.bottom - rect.height - this.verticalOffset : positionRect.top + this.verticalOffset;
-      var left = alignRight ? positionRect.right - rect.width - this.horizontalOffset : positionRect.left + this.horizontalOffset;
+      var top = alignBottom ? positionRect.bottom - rect.height : positionRect.top;
+      var left = alignRight ? positionRect.right - rect.width : positionRect.left;
 
       if (this.noOverlap) {
         // We can overlap one of the dimensions, choose the one that minimizes the cropped area.
