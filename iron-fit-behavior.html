@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
 /**
-Polymer.IronFitBehavior fits an element in another element using `max-height` and `max-width`, and
+`Polymer.IronFitBehavior` fits an element in another element using `max-height` and `max-width`, and
 optionally centers it in the window or another element.
 
 The element will only be sized and/or positioned if it has not already been sized and/or positioned
@@ -23,8 +23,25 @@ CSS properties               | Action
 `position` set               | Element is not centered horizontally or vertically
 `top` or `bottom` set        | Element is not vertically centered
 `left` or `right` set        | Element is not horizontally centered
-`max-height` or `height` set | Element respects `max-height` or `height`
-`max-width` or `width` set   | Element respects `max-width` or `width`
+`max-height` set             | Element respects `max-height`
+`max-width` set              | Element respects `max-width`
+
+`Polymer.IronFitBehavior` can position an element into another element using
+`verticalAlign` and `horizontalAlign`. This will override the element's css position.
+
+      <div class="container">
+        <iron-fit-impl vertical-align="top" horizontal-align="auto">
+          Positioned into the container
+        </iron-fit-impl>
+      </div>
+
+Use `noOverlap` to position the element around another element without overlapping it.
+
+      <div class="container">
+        <iron-fit-impl no-overlap vertical-align="auto" horizontal-align="auto">
+          Positioned around the container
+        </iron-fit-impl>
+      </div>
 
 @demo demo/index.html
 @polymerBehavior
@@ -63,15 +80,17 @@ CSS properties               | Action
       },
 
       /**
-       * The element that should be used to position the element.
+       * The element that should be used to position the element. If not set, it will
+       * default to the parent node.
+       * @type {!Element}
        */
       positionTarget: {
-        type: Node
+        type: Element
       },
 
       /**
        * The orientation against which to align the element horizontally
-       * relative to the `positionTarget`. Possible values are left, right, auto.
+       * relative to the `positionTarget`. Possible values are "left", "right", "auto".
        */
       horizontalAlign: {
         type: String
@@ -79,7 +98,7 @@ CSS properties               | Action
 
       /**
        * The orientation against which to align the element vertically
-       * relative to the `positionTarget`. Possible values are top, bottom, auto.
+       * relative to the `positionTarget`. Possible values are "top", "bottom", "auto".
        */
       verticalAlign: {
         type: String
@@ -93,11 +112,11 @@ CSS properties               | Action
        *
        * If `horizontalAlign` is "left", this offset will increase or decrease
        * the distance to the left side of the screen: a negative offset will
-       * move the dropdown to the left; a positive one, to the right.
+       * move the element to the left; a positive one, to the right.
        *
        * Conversely if `horizontalAlign` is "right", this offset will increase
        * or decrease the distance to the right side of the screen: a negative
-       * offset will move the dropdown to the right; a positive one, to the left.
+       * offset will move the element to the right; a positive one, to the left.
        */
       horizontalOffset: {
         type: Number,
@@ -113,11 +132,11 @@ CSS properties               | Action
        *
        * If `verticalAlign` is "top", this offset will increase or decrease
        * the distance to the top side of the screen: a negative offset will
-       * move the dropdown upwards; a positive one, downwards.
+       * move the element upwards; a positive one, downwards.
        *
        * Conversely if `verticalAlign` is "bottom", this offset will increase
        * or decrease the distance to the bottom side of the screen: a negative
-       * offset will move the dropdown downwards; a positive one, upwards.
+       * offset will move the element downwards; a positive one, upwards.
        */
       verticalOffset: {
         type: Number,
@@ -180,8 +199,8 @@ CSS properties               | Action
     },
 
     /**
-     * The element that should be used to position the element when
-     * it opens, if no position target is configured.
+     * The element that should be used to position the element,
+     * if no position target is configured.
      */
     get _defaultPositionTarget() {
       var parent = Polymer.dom(this).parentNode;
@@ -225,7 +244,7 @@ CSS properties               | Action
     },
 
     /**
-     * Fits and optionally centers the element into the window, or `fitInfo` if specified.
+     * Positions and fits the element into the `fitInto` element.
      */
     fit: function() {
       this._discoverInfo();
@@ -292,8 +311,9 @@ CSS properties               | Action
     },
 
     /**
-     * Equivalent to calling `resetFit()` and `fit()`. Useful to call this after the element,
-     * the window, or the `fitInfo` element has been resized.
+     * Equivalent to calling `resetFit()` and `fit()`. Useful to call this after
+     * the element or the `fitInto` element has been resized, or if any of the
+     * positioning properties (e.g. `horizontalAlign, verticalAlign`) is updated.
      */
     refit: function() {
       this.resetFit();
@@ -301,7 +321,7 @@ CSS properties               | Action
     },
 
     /**
-     * Positions the element according to horizontalAlign, verticalAlign.
+     * Positions the element according to `horizontalAlign, verticalAlign`.
      */
     position: function() {
       if (!this.horizontalAlign && !this.verticalAlign) {
@@ -379,7 +399,7 @@ CSS properties               | Action
     },
 
     /**
-     * Constrains the size of the element to the window or `fitInfo` by setting `max-height`
+     * Constrains the size of the element to `fitInto` by setting `max-height`
      * and/or `max-width`.
      */
     constrain: function() {
