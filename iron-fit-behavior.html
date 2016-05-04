@@ -331,30 +331,19 @@ Use `noOverlap` to position the element around another element without overlappi
       this.style.left = '0px';
       this.style.top = '0px';
 
-      var t = this.getBoundingClientRect();
-      // Need a copy in order to be able to modify the values.
-      var rect = {
-        top: t.top,
-        bottom: t.bottom,
-        left: t.left,
-        right: t.right,
-        width: t.width,
-        height: t.height
-      };
-      // Consider the margin as part of the rect, we'll remove it later.
-      rect.width += (this._fitInfo.margin.left + this._fitInfo.margin.right);
-      rect.height += (this._fitInfo.margin.top + this._fitInfo.margin.bottom);
-      rect.bottom = rect.top + rect.height;
-      rect.right = rect.left + rect.width;
-
+      var rect = this.getBoundingClientRect();
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
-      var alignRight = this.__isAlignRight(this._localeHorizontalAlign, rect, positionRect, fitRect);
-      var alignBottom = this.__isAlignBottom(this.verticalAlign, rect, positionRect, fitRect);
+      // Consider the margin as part of the size for position calculations.
+      var width = rect.width + this._fitInfo.margin.left + this._fitInfo.margin.right;
+      var height = rect.height + this._fitInfo.margin.top + this._fitInfo.margin.bottom;
 
-      var top = alignBottom ? positionRect.bottom - rect.height : positionRect.top;
-      var left = alignRight ? positionRect.right - rect.width : positionRect.left;
+      var alignRight = this.__isAlignRight(this._localeHorizontalAlign, width, positionRect, fitRect);
+      var alignBottom = this.__isAlignBottom(this.verticalAlign, height, positionRect, fitRect);
+
+      var top = alignBottom ? positionRect.bottom - height : positionRect.top;
+      var left = alignRight ? positionRect.right - width : positionRect.left;
 
       if (this.noOverlap) {
         // We can overlap one of the dimensions, choose the one that minimizes the cropped area.
@@ -363,14 +352,14 @@ Use `noOverlap` to position the element around another element without overlappi
         var areaOverlapLeft = this.__getCroppedArea({
           top: noOverlapTop,
           left: left,
-          width: rect.width,
-          height: rect.height
+          width: width,
+          height: height
         }, fitRect);
         var areaOverlapTop = this.__getCroppedArea({
           top: top,
           left: noOverlapLeft,
-          width: rect.width,
-          height: rect.height
+          width: width,
+          height: height
         }, fitRect);
         if (areaOverlapLeft < areaOverlapTop) {
           left = noOverlapLeft;
@@ -379,12 +368,10 @@ Use `noOverlap` to position the element around another element without overlappi
         }
       }
 
-      // Remove the margin.
-      rect.width -= (this._fitInfo.margin.left + this._fitInfo.margin.right);
-      rect.height -= (this._fitInfo.margin.top + this._fitInfo.margin.bottom);
       left += this._fitInfo.margin.left;
       top += this._fitInfo.margin.top;
 
+      // Use original size (without margin)
       var right = left + rect.width;
       var bottom = top + rect.height;
 
@@ -519,24 +506,24 @@ Use `noOverlap` to position the element around another element without overlappi
       return target.getBoundingClientRect();
     },
 
-    __isAlignRight: function(hAlign, rect, positionRect, fitRect) {
+    __isAlignRight: function(hAlign, size, positionRect, fitRect) {
       if (hAlign === 'right') {
         return true;
       }
       if (hAlign === 'auto') {
         return positionRect.left + positionRect.width/2 > fitRect.left + fitRect.width/2 ||
-          (!this.noOverlap && positionRect.left < 0 && positionRect.right - rect.width > positionRect.left);
+          (!this.noOverlap && positionRect.left < 0 && positionRect.right - size > positionRect.left);
       }
       return false;
     },
 
-    __isAlignBottom: function(vAlign, rect, positionRect, fitRect) {
+    __isAlignBottom: function(vAlign, size, positionRect, fitRect) {
       if (vAlign === 'bottom') {
         return true;
       }
       if (vAlign === 'auto') {
         return positionRect.top + positionRect.height/2 > fitRect.top + fitRect.height/2 ||
-          (!this.noOverlap && positionRect.top < 0 && positionRect.bottom - rect.height > positionRect.top);
+          (!this.noOverlap && positionRect.top < 0 && positionRect.bottom - size > positionRect.top);
       }
       return false;
     },
