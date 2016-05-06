@@ -386,11 +386,11 @@ Use `noOverlap` to position the element around another element without overlappi
         }
       }
       if (top < margin.top) {
+        top = margin.top;
         if (bottom - top < minHeight) {
           top = bottom - minHeight;
         }
       }
-
 
       this.sizingTarget.style.maxWidth = (right - left) + 'px';
       this.sizingTarget.style.maxHeight = (bottom - top) + 'px';
