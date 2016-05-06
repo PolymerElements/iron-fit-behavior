@@ -506,10 +506,7 @@ Use `noOverlap` to position the element around another element without overlappi
     },
 
     __isAlignRight: function(hAlign, size, positionRect, fitRect) {
-      if (hAlign === 'right') {
-        return true;
-      }
-      if (hAlign === 'auto') {
+      if (!hAlign || hAlign === 'auto') {
         // We should align on the right if positionTarget is on the right of fitInto,
         // or if we can overlap and aligning on the left would cause more cropping
         // than aligning on the right.
@@ -520,14 +517,11 @@ Use `noOverlap` to position the element around another element without overlappi
         return positionTargetCenter > fitIntoCenter ||
           (!this.noOverlap && croppedLeft > croppedRight);
       }
-      return false;
+      return hAlign === 'right';
     },
 
     __isAlignBottom: function(vAlign, size, positionRect, fitRect) {
-      if (vAlign === 'bottom') {
-        return true;
-      }
-      if (vAlign === 'auto') {
+      if (!vAlign || vAlign === 'auto') {
         // We should align on the bottom if positionTarget is on the bottom of fitInto,
         // or if we can overlap and aligning on the top would cause more cropping
         // than aligning on the bottom.
@@ -538,7 +532,7 @@ Use `noOverlap` to position the element around another element without overlappi
         return positionTargetCenter > fitIntoCenter ||
           (!this.noOverlap && croppedTop > croppedBottom);
       }
-      return false;
+      return vAlign === 'bottom';
     },
 
     __getCroppedArea: function(rect, fitRect) {
