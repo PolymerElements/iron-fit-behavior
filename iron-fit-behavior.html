@@ -497,150 +497,79 @@ Use `noOverlap` to position the element around another element without overlappi
 
     __getPosition: function(hAlign, vAlign, size, positionRect, fitRect) {
       // All the possible configurations.
+      // Ordered as top-left, top-right, bottom-left, bottom-right.
       var positions = [{
         verticalAlign: 'top',
         horizontalAlign: 'left',
-        horizontalOverlap: true,
-        verticalOverlap: true,
         top: positionRect.top,
         left: positionRect.left
       }, {
         verticalAlign: 'top',
         horizontalAlign: 'right',
-        horizontalOverlap: true,
-        verticalOverlap: true,
         top: positionRect.top,
         left: positionRect.right - size.width
       }, {
         verticalAlign: 'bottom',
         horizontalAlign: 'left',
-        horizontalOverlap: true,
-        verticalOverlap: true,
         top: positionRect.bottom - size.height,
         left: positionRect.left
       }, {
         verticalAlign: 'bottom',
         horizontalAlign: 'right',
-        horizontalOverlap: true,
-        verticalOverlap: true,
         top: positionRect.bottom - size.height,
         left: positionRect.right - size.width
-      }, {
-        verticalAlign: 'top',
-        horizontalAlign: 'left',
-        horizontalOverlap: false,
-        verticalOverlap: true,
-        top: positionRect.top,
-        left: positionRect.right
-      }, {
-        verticalAlign: 'top',
-        horizontalAlign: 'left',
-        horizontalOverlap: true,
-        verticalOverlap: false,
-        top: positionRect.bottom,
-        left: positionRect.left
-      }, {
-        verticalAlign: 'top',
-        horizontalAlign: 'right',
-        horizontalOverlap: false,
-        verticalOverlap: true,
-        top: positionRect.top,
-        left: positionRect.left - size.width
-      }, {
-        verticalAlign: 'top',
-        horizontalAlign: 'right',
-        horizontalOverlap: true,
-        verticalOverlap: false,
-        top: positionRect.bottom,
-        left: positionRect.right - size.width
-      }, {
-        verticalAlign: 'bottom',
-        horizontalAlign: 'left',
-        horizontalOverlap: true,
-        verticalOverlap: false,
-        top: positionRect.top - size.height,
-        left: positionRect.left
-      }, {
-        verticalAlign: 'bottom',
-        horizontalAlign: 'left',
-        horizontalOverlap: false,
-        verticalOverlap: true,
-        top: positionRect.bottom - size.height,
-        left: positionRect.right
-      }, {
-        verticalAlign: 'bottom',
-        horizontalAlign: 'right',
-        horizontalOverlap: true,
-        verticalOverlap: false,
-        top: positionRect.top - size.height,
-        left: positionRect.right - size.width
-      }, {
-        verticalAlign: 'bottom',
-        horizontalAlign: 'right',
-        horizontalOverlap: false,
-        verticalOverlap: true,
-        top: positionRect.bottom - size.height,
-        left: positionRect.left - size.width
       }];
+
+      if (this.noOverlap) {
+        // Duplicate.
+        for (var i = 0, l = positions.length; i < l; i++) {
+          var copy = {};
+          for (var key in positions[i]) {
+            copy[key] = positions[i][key];
+          }
+          positions.push(copy);
+        }
+        // Horizontal overlap only.
+        positions[0].top = positions[1].top = positionRect.bottom;
+        positions[2].top = positions[3].top = positionRect.top - size.height;
+        // Vertical overlap only.
+        positions[4].left = positions[6].left = positionRect.right;
+        positions[5].left = positions[7].left = positionRect.left - size.width;
+      }
 
       // Consider null as auto for coding convenience.
       vAlign = vAlign === 'auto' ? null : vAlign;
       hAlign = hAlign === 'auto' ? null : hAlign;
 
-      // Filter according to noOverlap, dynamicAlign, hAlign & vAlign
-      positions = positions.filter(function(pos) {
-        // If no overlap, at least one dimension should not overlap.
-        var res = this.noOverlap && (!pos.horizontalOverlap || !pos.verticalOverlap);
-        // Else if can overlap, both dimensions should be overlapped.
-        res = res || !this.noOverlap && pos.horizontalOverlap && pos.verticalOverlap;
-        // If dynamicAlign, we must consider all possible values, otherwise filter
-        // also by vertical/horizontal align.
-        if (res && !this.dynamicAlign) {
-          if (vAlign) {
-            res = res && pos.verticalAlign === vAlign;
-          }
-          if (hAlign) {
-            res = res && pos.horizontalAlign === hAlign;
-          }
-        }
-        // While at it, calculate the croppedArea.
-        if (res) {
-          pos.croppedArea = this.__getCroppedArea({
-            top: pos.top,
-            left: pos.left,
-            width: size.width,
-            height: size.height
-          }, fitRect);
-        }
-        return res;
-      }, this);
+      // If dynamicAlign, we must consider all possible values, otherwise filter by hAlign & vAlign.
+      if (!this.dynamicAlign && (vAlign || hAlign)) {
+        positions = positions.filter(function(pos) {
+          return pos.verticalAlign === vAlign || pos.horizontalAlign === hAlign;
+        }, this);
+      }
 
       // Sort by cropped area, top positions crop less.
       positions.sort(function(a, b) {
-        return a.croppedArea - b.croppedArea;
-      });
-
-      var result = positions[0];
-      if (this.dynamicAlign && (vAlign || hAlign)) {
-        // Try to get the one desired by the user!
-        var exactMatch;
-        for (var i = 0; i < positions.length; i++) {
-          var pos = positions[i];
-          if (pos.verticalAlign === vAlign || pos.horizontalAlign === hAlign) {
-            if (pos.croppedArea <= result.croppedArea) {
-              result = pos;
-            }
-            if (pos.verticalAlign === vAlign && pos.horizontalAlign === hAlign) {
-              exactMatch = pos;
-            }
+        a.croppedArea = a.croppedArea || this.__getCroppedArea({ top: a.top, left: a.left, width: size.width, height: size.height }, fitRect);
+        b.croppedArea = b.croppedArea || this.__getCroppedArea({ top: b.top, left: b.left, width: size.width, height: size.height }, fitRect);
+        var diff = a.croppedArea - b.croppedArea;
+        // If they're the same, check align preferences.
+        if (diff === 0) {
+          // Check first exact match, the if hAlign or vAlign matches.
+          if (a.verticalAlign === vAlign && a.horizontalAlign === hAlign) {
+            diff = -1;
+          } else if (b.verticalAlign === vAlign && b.horizontalAlign === hAlign) {
+            diff = 1;
+          } else if (a.verticalAlign === vAlign || a.horizontalAlign === hAlign) {
+            diff = -1;
+          } else if (b.verticalAlign === vAlign || b.horizontalAlign === hAlign) {
+            diff = 1;
           }
         }
-        // Exact match should always prevail.
-        if (exactMatch && exactMatch.croppedArea === result.croppedArea) {
-          result = exactMatch;
-        }
-      }
-      return result;
+        return diff;
+      }.bind(this));
+
+      return positions[0];
     }
 
   };
