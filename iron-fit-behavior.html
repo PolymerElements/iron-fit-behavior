@@ -530,11 +530,11 @@ Use `noOverlap` to position the element around another element without overlappi
           positions.push(copy);
         }
         // Horizontal overlap only.
-        positions[0].top = positions[1].top = positionRect.bottom;
-        positions[2].top = positions[3].top = positionRect.top - size.height;
+        positions[0].top = positions[1].top += positionRect.height;
+        positions[2].top = positions[3].top -= positionRect.height;
         // Vertical overlap only.
-        positions[4].left = positions[6].left = positionRect.right;
-        positions[5].left = positions[7].left = positionRect.left - size.width;
+        positions[4].left = positions[6].left += positionRect.width;
+        positions[5].left = positions[7].left -= positionRect.width;
       }
 
       // Consider null as auto for coding convenience.
@@ -544,7 +544,7 @@ Use `noOverlap` to position the element around another element without overlappi
       // If dynamicAlign, we must consider all possible values, otherwise filter by hAlign & vAlign.
       if (!this.dynamicAlign && (vAlign || hAlign)) {
         positions = positions.filter(function(pos) {
-          return pos.verticalAlign === vAlign || pos.horizontalAlign === hAlign;
+          return (!vAlign || pos.verticalAlign === vAlign) && (!hAlign || pos.horizontalAlign === hAlign);
         }, this);
       }
 
