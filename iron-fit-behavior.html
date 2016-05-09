@@ -105,6 +105,14 @@ Use `noOverlap` to position the element around another element without overlappi
       },
 
       /**
+       * If true, it will use `horizontalAlign` and `verticalAlign` values as preferred alignment
+       * and if there's not enough space, it will pick the values which minimize the cropping.
+       */
+      dynamicAlign: {
+        type: Boolean
+      },
+
+      /**
        * The same as setting margin-left and margin-right css properties.
        * @deprecated
        */
@@ -338,42 +346,17 @@ Use `noOverlap` to position the element around another element without overlappi
       var margin = this._fitInfo.margin;
 
       // Consider the margin as part of the size for position calculations.
-      var width = rect.width + margin.left + margin.right;
-      var height = rect.height + margin.top + margin.bottom;
+      var size = {
+        width: rect.width + margin.left + margin.right,
+        height: rect.height + margin.top + margin.bottom
+      };
 
-      var alignRight = this.__isAlignRight(this._localeHorizontalAlign, width, positionRect, fitRect);
-      var alignBottom = this.__isAlignBottom(this.verticalAlign, height, positionRect, fitRect);
+      var position = this.__getPosition(this._localeHorizontalAlign, this.verticalAlign, size, positionRect, fitRect);
 
-      var top = alignBottom ? positionRect.bottom - height : positionRect.top;
-      var left = alignRight ? positionRect.right - width : positionRect.left;
+      var left = position.left + margin.left;
+      var top = position.top + margin.top;
 
-      if (this.noOverlap) {
-        // We can overlap one of the dimensions, choose the one that minimizes the cropped area.
-        var noOverlapLeft = left + positionRect.width * (alignRight ? -1 : 1);
-        var noOverlapTop = top + positionRect.height * (alignBottom ? -1 : 1);
-        var areaOverlapLeft = this.__getCroppedArea({
-          top: noOverlapTop,
-          left: left,
-          width: width,
-          height: height
-        }, fitRect);
-        var areaOverlapTop = this.__getCroppedArea({
-          top: top,
-          left: noOverlapLeft,
-          width: width,
-          height: height
-        }, fitRect);
-        if (areaOverlapLeft >= areaOverlapTop) {
-          left = noOverlapLeft;
-        } else {
-          top = noOverlapTop;
-        }
-      }
-
-      left += margin.left;
-      top += margin.top;
-
-      // Use original size (without margin)
+      // Use original size (without margin).
       var right = Math.min(fitRect.right - margin.right, left + rect.width);
       var bottom = Math.min(fitRect.bottom - margin.bottom, top + rect.height);
 
@@ -505,40 +488,96 @@ Use `noOverlap` to position the element around another element without overlappi
       return target.getBoundingClientRect();
     },
 
-    __isAlignRight: function(hAlign, size, positionRect, fitRect) {
-      if (!hAlign || hAlign === 'auto') {
-        // We should align on the right if positionTarget is on the right of fitInto,
-        // or if we can overlap and aligning on the left would cause more cropping
-        // than aligning on the right.
-        var positionTargetCenter = positionRect.left + positionRect.width/2;
-        var fitIntoCenter = fitRect.left + fitRect.width/2;
-        var croppedLeft = Math.abs(Math.min(0, positionRect.left));
-        var croppedRight = Math.abs(Math.min(0, positionRect.right - size));
-        return positionTargetCenter > fitIntoCenter ||
-          (!this.noOverlap && croppedLeft > croppedRight);
-      }
-      return hAlign === 'right';
+    __getCroppedArea: function(position, size, fitRect) {
+      var verticalCrop = Math.min(0, position.top) + Math.min(0, fitRect.bottom - (position.top + size.height));
+      var horizontalCrop = Math.min(0, position.left) + Math.min(0, fitRect.right - (position.left + size.width));
+      return Math.abs(verticalCrop) * size.width + Math.abs(horizontalCrop) * size.height;
     },
 
-    __isAlignBottom: function(vAlign, size, positionRect, fitRect) {
-      if (!vAlign || vAlign === 'auto') {
-        // We should align on the bottom if positionTarget is on the bottom of fitInto,
-        // or if we can overlap and aligning on the top would cause more cropping
-        // than aligning on the bottom.
-        var positionTargetCenter = positionRect.top + positionRect.height/2;
-        var fitIntoCenter = fitRect.top + fitRect.height/2;
-        var croppedTop = Math.abs(Math.min(0, positionRect.top));
-        var croppedBottom = Math.abs(Math.min(0, positionRect.bottom - size));
-        return positionTargetCenter > fitIntoCenter ||
-          (!this.noOverlap && croppedTop > croppedBottom);
-      }
-      return vAlign === 'bottom';
-    },
 
-    __getCroppedArea: function(rect, fitRect) {
-      var verticalCrop = Math.min(0, rect.top) + Math.min(0, fitRect.bottom - (rect.top + rect.height));
-      var horizontalCrop = Math.min(0, rect.left) + Math.min(0, fitRect.right - (rect.left + rect.width));
-      return Math.abs(verticalCrop) * rect.width + Math.abs(horizontalCrop) * rect.height;
+    __getPosition: function(hAlign, vAlign, size, positionRect, fitRect) {
+      // All the possible configurations.
+      // Ordered as top-left, top-right, bottom-left, bottom-right.
+      var positions = [{
+        verticalAlign: 'top',
+        horizontalAlign: 'left',
+        top: positionRect.top,
+        left: positionRect.left
+      }, {
+        verticalAlign: 'top',
+        horizontalAlign: 'right',
+        top: positionRect.top,
+        left: positionRect.right - size.width
+      }, {
+        verticalAlign: 'bottom',
+        horizontalAlign: 'left',
+        top: positionRect.bottom - size.height,
+        left: positionRect.left
+      }, {
+        verticalAlign: 'bottom',
+        horizontalAlign: 'right',
+        top: positionRect.bottom - size.height,
+        left: positionRect.right - size.width
+      }];
+
+      if (this.noOverlap) {
+        // Duplicate.
+        for (var i = 0, l = positions.length; i < l; i++) {
+          var copy = {};
+          for (var key in positions[i]) {
+            copy[key] = positions[i][key];
+          }
+          positions.push(copy);
+        }
+        // Horizontal overlap only.
+        positions[0].top = positions[1].top += positionRect.height;
+        positions[2].top = positions[3].top -= positionRect.height;
+        // Vertical overlap only.
+        positions[4].left = positions[6].left += positionRect.width;
+        positions[5].left = positions[7].left -= positionRect.width;
+      }
+
+      // Consider auto as null for coding convenience.
+      vAlign = vAlign === 'auto' ? null : vAlign;
+      hAlign = hAlign === 'auto' ? null : hAlign;
+
+      var position;
+      for (var i = 0; i < positions.length; i++) {
+        var pos = positions[i];
+        // Align is ok if:
+        // - Horizontal AND vertical are required and match, or
+        // - Only vertical is required and matches, or
+        // - Only horizontal is required and matches.
+        var alignOk = (pos.verticalAlign === vAlign && pos.horizontalAlign === hAlign) ||
+                      (pos.verticalAlign === vAlign && !hAlign) ||
+                      (pos.horizontalAlign === hAlign && !vAlign);
+
+        // If both vAlign and hAlign are defined, return exact match.
+        // For dynamicAlign and noOverlap we'll have more than one candidate, so
+        // we'll have to check the croppedArea to make the best choice.
+        if (!this.dynamicAlign && !this.noOverlap && vAlign && hAlign && alignOk) {
+          position = pos;
+          break;
+        }
+
+        // Filter out elements that don't match the alignment (if defined).
+        // With dynamicAlign, we need to consider all the positions to find the
+        // one that minimizes the cropped area.
+        if (!this.dynamicAlign && (vAlign || hAlign) && !alignOk) {
+          continue;
+        }
+
+        position = position || pos;
+        pos.croppedArea = this.__getCroppedArea(pos, size, fitRect);
+        var diff = pos.croppedArea - position.croppedArea;
+        // Check which crops less. If it crops equally,
+        // check for alignment preferences.
+        if (diff < 0 || (diff === 0 && alignOk)) {
+          position = pos;
+        }
+      }
+
+      return position;
     }
 
   };

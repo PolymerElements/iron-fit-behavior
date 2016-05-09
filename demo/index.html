@@ -62,6 +62,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           min-width: 100px;
           min-height: 100px;
         }
+
+        button {
+          background-color: white;
+          border-radius: 5px;
+          border-width: 1px;
+        }
+        
+        button.selected {
+          background-color: #b3e5fc;
+        }
       </style>
       <template is="dom-bind">
         <template is="dom-repeat" items="[[containers]]">
@@ -81,7 +91,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <button on-tap="updateAlign" horizontal-align="auto">auto</button>
             <button on-tap="updateAlign" horizontal-align>null</button>
           </p>
-          <button on-tap="toggleNoOverlap">Toggle overlap</button>
+          <button on-tap="toggleNoOverlap">no overlap</button>
+          <button on-tap="toggleDynamicAlign">dynamic align</button>
         </simple-fit>
         <script>
           var defaultTarget = Polymer.dom(myFit).parentNode;
@@ -111,21 +122,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var target = Polymer.dom(e).rootTarget;
             if (target.hasAttribute('horizontal-align')) {
               myFit.horizontalAlign = target.getAttribute('horizontal-align');
+              var children = target.parentNode.querySelectorAll('[horizontal-align]');
+              for (var i = 0; i < children.length; i++) {
+                toggleClass(children[i], 'selected', children[i] === target);
+              }
             }
             if (target.hasAttribute('vertical-align')) {
               myFit.verticalAlign = target.getAttribute('vertical-align');
+              var children = target.parentNode.querySelectorAll('[vertical-align]');
+              for (var i = 0; i < children.length; i++) {
+                toggleClass(children[i], 'selected', children[i] === target);
+              }
             }
             template.refit();
           };
 
-          template.toggleNoOverlap = function() {
+          template.toggleNoOverlap = function(e) {
             myFit.noOverlap = !myFit.noOverlap;
+            toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.noOverlap);
+            template.refit();
+          };
+
+          template.toggleDynamicAlign = function(e) {
+            myFit.dynamicAlign = !myFit.dynamicAlign;
+            toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.dynamicAlign);
             template.refit();
           };
 
           // Listen for resize and scroll on window.
           window.addEventListener('resize', template.refit);
           window.addEventListener('scroll', template.refit);
+
+          function toggleClass(element, cssClass, condition) {
+            element.classList[condition ? 'add' : 'remove'](cssClass);
+          }
         </script>
       </template>
     </template>

@@ -495,6 +495,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.height, elRect.height, 'min-height ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
+
+          test('dynamicAlign will prefer bottom align if it minimizes the cropping', function() {
+            parent.style.top = '-10px';
+            parentRect = parent.getBoundingClientRect();
+            el.verticalAlign = 'top';
+            el.dynamicAlign = true;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.bottom, parentRect.bottom, 'bottom ok');
+            assert.equal(rect.height, elRect.height, 'no cropping');
+          });
         });
 
         suite('when verticalAlign is bottom', function() {
@@ -556,6 +567,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var rect = el.getBoundingClientRect();
             assert.equal(rect.height, elRect.height, 'min-height ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
+          });
+
+          test('dynamicAlign will prefer top align if it minimizes the cropping', function() {
+            parent.style.top = (window.innerHeight - elRect.height) + 'px';
+            parentRect = parent.getBoundingClientRect();
+            el.verticalAlign = 'bottom';
+            el.dynamicAlign = true;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.top, parentRect.top, 'top ok');
+            assert.equal(rect.height, elRect.height, 'no cropping');
           });
         });
 
@@ -670,6 +692,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.width, elRect.width, 'min-width ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
+
+          test('dynamicAlign will prefer right align if it minimizes the cropping', function() {
+            parent.style.left = '-10px';
+            parentRect = parent.getBoundingClientRect();
+            el.horizontalAlign = 'left';
+            el.dynamicAlign = true;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.right, parentRect.right, 'right ok');
+            assert.equal(rect.height, elRect.height, 'no cropping');
+          });
+
         });
 
         suite('when horizontalAlign is right', function() {
@@ -734,6 +768,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var rect = el.getBoundingClientRect();
             assert.equal(rect.width, elRect.width, 'min-width ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
+          });
+
+          test('dynamicAlign will prefer left align if it minimizes the cropping', function() {
+            parent.style.left = (window.innerWidth - elRect.width) + 'px';
+            parentRect = parent.getBoundingClientRect();
+            el.horizontalAlign = 'right';
+            el.dynamicAlign = true;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, parentRect.left, 'left ok');
+            assert.equal(rect.height, elRect.height, 'no cropping');
           });
 
         });
