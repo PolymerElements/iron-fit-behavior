@@ -537,32 +537,43 @@ Use `noOverlap` to position the element around another element without overlappi
         positions[5].left = positions[7].left -= positionRect.width;
       }
 
-      // Consider null as auto for coding convenience.
+      // Consider auto as null for coding convenience.
       vAlign = vAlign === 'auto' ? null : vAlign;
       hAlign = hAlign === 'auto' ? null : hAlign;
 
-      // If dynamicAlign, we must consider all possible values, otherwise filter by hAlign & vAlign.
-      if (!this.dynamicAlign && (vAlign || hAlign)) {
-        positions = positions.filter(function(pos) {
-          return (!vAlign || pos.verticalAlign === vAlign) && (!hAlign || pos.horizontalAlign === hAlign);
-        }, this);
-      }
+      var position;
+      for (var i = 0; i < positions.length; i++) {
+        var pos = positions[i];
+        // Align is ok if:
+        // - Horizontal AND vertical are required and match, or
+        // - Only vertical is required and matches, or
+        // - Only horizontal is required and matches.
+        var alignOk = (pos.verticalAlign === vAlign && pos.horizontalAlign === hAlign) ||
+                      (pos.verticalAlign === vAlign && !hAlign) ||
+                      (pos.horizontalAlign === hAlign && !vAlign);
 
-      var position = positions[0];
-      if (positions.length > 1) {
-        // Search for position that crops less.
-        position.croppedArea = this.__getCroppedArea(position, size, fitRect);
-        for (var i = 1; i < positions.length; i++) {
-          var pos = positions[i];
-          pos.croppedArea = this.__getCroppedArea(pos, size, fitRect);
-          var diff = pos.croppedArea - position.croppedArea;
-          if (diff < 0) {
-            position = pos;
-          } else if (diff === 0 && (vAlign || hAlign)) {
-            if ((!vAlign || pos.verticalAlign === vAlign) && (!hAlign || pos.horizontalAlign === hAlign)) {
-              position = pos;
-            }
-          }
+        // If both vAlign and hAlign are defined, return exact match.
+        // For dynamicAlign and noOverlap we'll have more than one candidate, so
+        // we'll have to check the croppedArea to make the best choice.
+        if (!this.dynamicAlign && !this.noOverlap && vAlign && hAlign && alignOk) {
+          position = pos;
+          break;
+        }
+
+        // Filter out elements that don't match the alignment (if defined).
+        // With dynamicAlign, we need to consider all the positions to find the
+        // one that minimizes the cropped area.
+        if (!this.dynamicAlign && (vAlign || hAlign) && !alignOk) {
+          continue;
+        }
+
+        position = position || pos;
+        pos.croppedArea = this.__getCroppedArea(pos, size, fitRect);
+        var diff = pos.croppedArea - position.croppedArea;
+        // Check which crops less. If it crops equally,
+        // check for alignment preferences.
+        if (diff < 0 || (diff === 0 && alignOk)) {
+          position = pos;
         }
       }
 
