@@ -486,13 +486,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isBelow(rect.height, elRect.height, 'height ok');
           });
 
-          test('min-height is respected: element is hidden if does not have enough height', function() {
+          test('min-height is preserved: element is displayed even if partially', function() {
             parent.style.top = '-10px';
             el.verticalAlign = 'top';
             el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
-            assert.isFalse(intersects(rect, fitRect), 'not visible');
+            assert.equal(rect.height, elRect.height, 'min-height ok');
+            assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
         });
 
@@ -547,13 +548,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.height, 100, 'height ok');
           });
 
-          test('min-height is respected: element is hidden if does not have enough height', function() {
+          test('min-height is preserved: element is displayed even if partially', function() {
             parent.style.top = (elRect.height - 10 - parentRect.height) + 'px';
             el.verticalAlign = 'bottom';
             el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
-            assert.isFalse(intersects(rect, fitRect), 'not visible');
+            assert.equal(rect.height, elRect.height, 'min-height ok');
+            assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
         });
 
@@ -659,13 +661,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.isBelow(rect.width, elRect.width, 'width ok');
           });
 
-          test('min-width is respected: element is hidden if does not have enough width', function() {
+          test('min-width is preserved: element is displayed even if partially', function() {
             parent.style.left = '-10px';
             el.style.minWidth = elRect.width + 'px';
             el.horizontalAlign = 'left';
             el.refit();
             var rect = el.getBoundingClientRect();
-            assert.isFalse(intersects(rect, fitRect), 'not visible');
+            assert.equal(rect.width, elRect.width, 'min-width ok');
+            assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
         });
 
@@ -723,13 +726,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.width, 100, 'width ok');
           });
 
-          test('min-width is respected: element is hidden if does not have enough width', function() {
+          test('min-width is preserved: element is displayed even if partially', function() {
             parent.style.left = (elRect.width - 10 - parentRect.width) + 'px';
             el.horizontalAlign = 'right';
             el.style.minWidth = elRect.width + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
-            assert.isFalse(intersects(rect, fitRect), 'not visible');
+            assert.equal(rect.width, elRect.width, 'min-width ok');
+            assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
 
         });
