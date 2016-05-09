@@ -488,10 +488,10 @@ Use `noOverlap` to position the element around another element without overlappi
       return target.getBoundingClientRect();
     },
 
-    __getCroppedArea: function(rect, fitRect) {
-      var verticalCrop = Math.min(0, rect.top) + Math.min(0, fitRect.bottom - (rect.top + rect.height));
-      var horizontalCrop = Math.min(0, rect.left) + Math.min(0, fitRect.right - (rect.left + rect.width));
-      return Math.abs(verticalCrop) * rect.width + Math.abs(horizontalCrop) * rect.height;
+    __getCroppedArea: function(position, size, fitRect) {
+      var verticalCrop = Math.min(0, position.top) + Math.min(0, fitRect.bottom - (position.top + size.height));
+      var horizontalCrop = Math.min(0, position.left) + Math.min(0, fitRect.right - (position.left + size.width));
+      return Math.abs(verticalCrop) * size.width + Math.abs(horizontalCrop) * size.height;
     },
 
 
@@ -548,28 +548,25 @@ Use `noOverlap` to position the element around another element without overlappi
         }, this);
       }
 
-      // Sort by cropped area, top positions crop less.
-      positions.sort(function(a, b) {
-        a.croppedArea = a.croppedArea || this.__getCroppedArea({ top: a.top, left: a.left, width: size.width, height: size.height }, fitRect);
-        b.croppedArea = b.croppedArea || this.__getCroppedArea({ top: b.top, left: b.left, width: size.width, height: size.height }, fitRect);
-        var diff = a.croppedArea - b.croppedArea;
-        // If they're the same, check align preferences.
-        if (diff === 0) {
-          // Check first exact match, the if hAlign or vAlign matches.
-          if (a.verticalAlign === vAlign && a.horizontalAlign === hAlign) {
-            diff = -1;
-          } else if (b.verticalAlign === vAlign && b.horizontalAlign === hAlign) {
-            diff = 1;
-          } else if (a.verticalAlign === vAlign || a.horizontalAlign === hAlign) {
-            diff = -1;
-          } else if (b.verticalAlign === vAlign || b.horizontalAlign === hAlign) {
-            diff = 1;
+      var position = positions[0];
+      if (positions.length > 1) {
+        // Search for position that crops less.
+        position.croppedArea = this.__getCroppedArea(position, size, fitRect);
+        for (var i = 1; i < positions.length; i++) {
+          var pos = positions[i];
+          pos.croppedArea = this.__getCroppedArea(pos, size, fitRect);
+          var diff = pos.croppedArea - position.croppedArea;
+          if (diff < 0) {
+            position = pos;
+          } else if (diff === 0 && (vAlign || hAlign)) {
+            if ((!vAlign || pos.verticalAlign === vAlign) && (!hAlign || pos.horizontalAlign === hAlign)) {
+              position = pos;
+            }
           }
         }
-        return diff;
-      }.bind(this));
+      }
 
-      return positions[0];
+      return position;
     }
 
   };
