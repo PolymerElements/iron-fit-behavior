@@ -827,6 +827,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.width, elRect.width, 'no cropping');
             assert.isFalse(intersects(rect, parentRect), 'no overlap');
           });
+        });
+
+        suite('prefer horizontal overlap to vertical overlap', function() {
+          setup(function() {
+            el.noOverlap = true;
+            el.dynamicAlign = true;
+            // Make space around the positionTarget.
+            parent.style.top = elRect.height + 'px';
+            parent.style.left = elRect.width + 'px';
+            parent.style.width = '10px';
+            parent.style.height = '10px';
+            parentRect = parent.getBoundingClientRect();
+          });
+
+          test('top-left aligns to target bottom-left', function() {
+            el.verticalAlign = 'top';
+            el.horizontalAlign = 'left';
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, parentRect.left, 'left ok');
+            assert.equal(rect.top, parentRect.bottom, 'top ok');
+          });
+
+          test('top-right aligns to target bottom-right', function() {
+            el.verticalAlign = 'top';
+            el.horizontalAlign = 'right';
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.right, parentRect.right, 'right ok');
+            assert.equal(rect.top, parentRect.bottom, 'top ok');
+          });
+
+          test('bottom-left aligns to target top-left', function() {
+            el.verticalAlign = 'bottom';
+            el.horizontalAlign = 'left';
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, parentRect.left, 'left ok');
+            assert.equal(rect.bottom, parentRect.top, 'bottom ok');
+          });
+
+          test('bottom-right aligns to target top-right', function() {
+            el.verticalAlign = 'bottom';
+            el.horizontalAlign = 'right';
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.right, parentRect.right, 'right ok');
+            assert.equal(rect.bottom, parentRect.top, 'bottom ok');
+          });
 
         });
 
