@@ -500,6 +500,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.height, elRect.height, 'no cropping');
           });
 
+          test('negative verticalOffset does not crop element', function() {
+            // Push to the bottom of the screen.
+            parent.style.top = (window.innerHeight - 50) +'px';
+            el.verticalAlign = 'top';
+            el.verticalOffset = -10;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.top, window.innerHeight - 60, 'top ok');
+            assert.equal(rect.bottom, window.innerHeight, 'bottom ok');
+          });
+
           test('max-height is updated', function() {
             parent.style.top = '-10px';
             el.verticalAlign = 'top';
@@ -695,6 +706,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var rect = el.getBoundingClientRect();
             assert.equal(rect.left, parentRect.left + 10, 'left ok');
             assert.equal(rect.width, elRect.width, 'no cropping');
+          });
+
+          test('negative horizontalOffset does not crop element', function() {
+            // Push to the bottom of the screen.
+            parent.style.left = (window.innerWidth - 50) +'px';
+            el.horizontalAlign = 'left';
+            el.horizontalOffset = -10;
+            el.refit();
+            var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, window.innerWidth - 60, 'left ok');
+            assert.equal(rect.right, window.innerWidth, 'right ok');
           });
 
           test('element max-width is updated', function() {
