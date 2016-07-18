@@ -355,9 +355,16 @@ Use `noOverlap` to position the element around another element without overlappi
       var positionRect = this.__getNormalizedRect(this.positionTarget);
       var fitRect = this.__getNormalizedRect(this.fitInto);
 
-      var position = this.__getPosition(this._localeHorizontalAlign, this.verticalAlign, rect, positionRect, fitRect);
-
       var margin = this._fitInfo.margin;
+
+      // Consider the margin as part of the size for position calculations.
+      var size = {
+        width: rect.width + margin.left + margin.right,
+        height: rect.height + margin.top + margin.bottom
+      };
+
+      var position = this.__getPosition(this._localeHorizontalAlign, this.verticalAlign, size, positionRect, fitRect);
+
       var minLeft = margin.left + (position.horizontalAlign === 'left' ? this.horizontalOffset : 0);
       var minTop = margin.top + (position.verticalAlign === 'top' ? this.verticalOffset : 0);
       var maxRight = fitRect.right - margin.right - (position.horizontalAlign === 'left' ? 0 : this.horizontalOffset);
@@ -491,13 +498,7 @@ Use `noOverlap` to position the element around another element without overlappi
     },
 
 
-    __getPosition: function(hAlign, vAlign, rect, positionRect, fitRect) {
-      var margin = this._fitInfo.margin;
-      // Consider the margin as part of the size for position calculations.
-      var size = {
-        width: rect.width + margin.left + margin.right,
-        height: rect.height + margin.top + margin.bottom
-      };
+    __getPosition: function(hAlign, vAlign, size, positionRect, fitRect) {
       // All the possible configurations.
       // Ordered as top-left, top-right, bottom-left, bottom-right.
       var positions = [{
