@@ -375,8 +375,8 @@ Use `noOverlap` to position the element around another element without overlappi
       var bottom = Math.min(maxBottom, top + rect.height);
 
       // Keep left/top within fitInto and respect minWidth/minHeight.
-      var minLeft = margin.left + this.horizontalOffset * (position.horizontalAlign === 'left');
-      var minTop = margin.top + this.verticalOffset * (position.verticalAlign === 'top');
+      var minLeft = fitRect.left + margin.left + this.horizontalOffset * (position.horizontalAlign === 'left');
+      var minTop = fitRect.top + margin.top + this.verticalOffset * (position.verticalAlign === 'top');
       left = Math.min(Math.max(left, minLeft), right - this._fitInfo.sizedBy.minWidth);
       top = Math.min(Math.max(top, minTop), bottom - this._fitInfo.sizedBy.minHeight);
 

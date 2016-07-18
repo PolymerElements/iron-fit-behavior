@@ -425,6 +425,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.closeTo(rect.top - crect.top - (crect.bottom - rect.bottom), 0, 5, 'centered vertically in fitInto');
         });
 
+        test('positioned element fits in another element', function() {
+          var constrain = document.querySelector('.constrain');
+          // element's positionTarget is `body`, and fitInto is `constrain`.
+          var el = fixture('sized-xy');
+          el.verticalAlign = 'top';
+          el.horizontalAlign = 'left';
+          el.fitInto = constrain;
+          el.refit();
+          var rect = el.getBoundingClientRect();
+          var crect = constrain.getBoundingClientRect();
+          assert.equal(rect.top, crect.top, 'top ok');
+          assert.equal(rect.left, crect.left, 'left ok');
+        });
+
       });
 
       suite('horizontal/vertical align', function() {
