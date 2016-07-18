@@ -365,19 +365,22 @@ Use `noOverlap` to position the element around another element without overlappi
 
       var position = this.__getPosition(this._localeHorizontalAlign, this.verticalAlign, size, positionRect, fitRect);
 
-      var minLeft = margin.left + (position.horizontalAlign === 'left' ? this.horizontalOffset : 0);
-      var minTop = margin.top + (position.verticalAlign === 'top' ? this.verticalOffset : 0);
-      var maxRight = fitRect.right - margin.right - (position.horizontalAlign === 'left' ? 0 : this.horizontalOffset);
-      var maxBottom = fitRect.bottom - margin.bottom - (position.verticalAlign === 'top' ? 0 : this.verticalOffset);
-
       var left = position.left + margin.left;
       var top = position.top + margin.top;
+
+      // We first limit right/bottom, then use those values to limit top/left.
+      var maxRight = fitRect.right - margin.right - this.horizontalOffset * (position.horizontalAlign !== 'left');
+      var maxBottom = fitRect.bottom - margin.bottom - this.verticalOffset * (position.verticalAlign !== 'top');
       var right = Math.min(maxRight, left + rect.width);
       var bottom = Math.min(maxBottom, top + rect.height);
 
+      // Keep left/top within fitInto and respect minWidth/minHeight.
+      var minLeft = margin.left + this.horizontalOffset * (position.horizontalAlign === 'left');
+      var minTop = margin.top + this.verticalOffset * (position.verticalAlign === 'top');
       left = Math.min(Math.max(left, minLeft), right - this._fitInfo.sizedBy.minWidth);
       top = Math.min(Math.max(top, minTop), bottom - this._fitInfo.sizedBy.minHeight);
 
+      // Use right/bottom to set maxWidth/maxHeight.
       this.sizingTarget.style.maxWidth = (right - left) + 'px';
       this.sizingTarget.style.maxHeight = (bottom - top) + 'px';
 
