@@ -540,6 +540,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
+            assert.equal(rect.top, 0, 'top ok');
             assert.equal(rect.height, elRect.height, 'min-height ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
@@ -613,6 +614,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             el.style.minHeight = elRect.height + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
+            assert.equal(rect.top, 0, 'top ok');
             assert.equal(rect.height, elRect.height, 'min-height ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
@@ -748,6 +750,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             el.horizontalAlign = 'left';
             el.refit();
             var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, 0, 'left ok');
             assert.equal(rect.width, elRect.width, 'min-width ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
@@ -825,6 +828,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             el.style.minWidth = elRect.width + 'px';
             el.refit();
             var rect = el.getBoundingClientRect();
+            assert.equal(rect.left, 0, 'left ok');
             assert.equal(rect.width, elRect.width, 'min-width ok');
             assert.isTrue(intersects(rect, fitRect), 'partially visible');
           });
