@@ -485,14 +485,19 @@ Use `noOverlap` to position the element around another element without overlappi
     },
 
     __getNormalizedRect: function(target) {
-      if (target === document.documentElement || target === window) {
+      if (target === window) {
+        // When zoomed, the window will be scrollable. Use html element to
+        // calculate the offset caused by that scroll.
+        var rect = document.documentElement.getBoundingClientRect();
+        var st = window.pageYOffset + rect.top;
+        var sl = window.pageXOffset + rect.left;
         return {
-          top: 0,
-          left: 0,
+          top: st,
+          left: sl,
           width: window.innerWidth,
           height: window.innerHeight,
-          right: window.innerWidth,
-          bottom: window.innerHeight
+          right: window.innerWidth + sl,
+          bottom: window.innerHeight + st
         };
       }
       return target.getBoundingClientRect();
