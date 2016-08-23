@@ -19,14 +19,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="simple-fit.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+  <link rel="import" href="simple-fit.html">
 
-  <style is="custom-style" include="demo-pages-shared-styles">
-    .centered {
-      min-width: 500px;
+  <style is="custom-style">
+    body {
+      max-width: 600px;
+      margin: 0 auto;
     }
+
     demo-snippet {
       --demo-snippet-code: {
         max-height: 250px;
@@ -50,8 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           display: inline-block;
           box-sizing: border-box;
           border: 1px solid;
-          width: 100px;
-          padding: 20px 0;
+          width: 125px;
+          padding: 40px 0;
           margin: 5px;
         }
 
@@ -68,96 +69,108 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           border-radius: 5px;
           border-width: 1px;
         }
-        
+
         button.selected {
           background-color: #b3e5fc;
         }
       </style>
-      <template is="dom-bind">
-        <template is="dom-repeat" items="[[containers]]">
-          <div class="target" on-tap="updatePositionTarget">Target</div>
-        </template>
-        <simple-fit id="myFit" auto-fit-on-attach>
-          <h2>Align</h2>
-          <p>
-            <button on-tap="updateAlign" vertical-align="top">top</button>
-            <button on-tap="updateAlign" vertical-align="bottom">bottom</button>
-            <button on-tap="updateAlign" vertical-align="auto">auto</button>
-            <button on-tap="updateAlign" vertical-align>null</button>
-          </p>
-          <p>
-            <button on-tap="updateAlign" horizontal-align="left">left</button>
-            <button on-tap="updateAlign" horizontal-align="right">right</button>
-            <button on-tap="updateAlign" horizontal-align="auto">auto</button>
-            <button on-tap="updateAlign" horizontal-align>null</button>
-          </p>
-          <button on-tap="toggleNoOverlap">no overlap</button>
-          <button on-tap="toggleDynamicAlign">dynamic align</button>
-        </simple-fit>
-        <script>
-          var defaultTarget = Polymer.dom(myFit).parentNode;
-          var template = document.querySelector('template[is="dom-bind"]');
 
-          template.containers = new Array(30);
+      <simple-fit id="myFit" auto-fit-on-attach>
+        <h2>Align</h2>
+        <p>
+          <button onclick="updateAlign(this)" vertical-align="top">top</button>
+          <button onclick="updateAlign(this)" vertical-align="bottom">bottom</button>
+          <button onclick="updateAlign(this)" vertical-align="auto">auto</button>
+          <button onclick="updateAlign(this)" vertical-align>null</button>
+        </p>
+        <p>
+          <button onclick="updateAlign(this)" horizontal-align="left">left</button>
+          <button onclick="updateAlign(this)" horizontal-align="right">right</button>
+          <button onclick="updateAlign(this)" horizontal-align="auto">auto</button>
+          <button onclick="updateAlign(this)" horizontal-align>null</button>
+        </p>
+        <button onclick="toggleNoOverlap(this)">no overlap</button>
+        <button onclick="toggleDynamicAlign(this)">dynamic align</button>
+      </simple-fit>
 
-          template.updatePositionTarget = function(e) {
-            var target = Polymer.dom(e).rootTarget;
-            target = myFit.positionTarget === target ? defaultTarget : target;
-            myFit.positionTarget.style.backgroundColor = '';
-            target.style.backgroundColor = 'orange';
-            myFit.positionTarget = target;
-            template.refit();
-          };
 
-          template._raf = null;
-          template.refit = function() {
-            template._raf && window.cancelAnimationFrame(template._raf);
-            template._raf = window.requestAnimationFrame(function() {
-              template._raf = null;
-              myFit.refit();
-            });
-          };
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
+      <div class="target" onclick="updatePositionTarget(this)">Target</div>
 
-          template.updateAlign = function(e) {
-            var target = Polymer.dom(e).rootTarget;
-            if (target.hasAttribute('horizontal-align')) {
-              myFit.horizontalAlign = target.getAttribute('horizontal-align');
-              var children = target.parentNode.querySelectorAll('[horizontal-align]');
-              for (var i = 0; i < children.length; i++) {
-                toggleClass(children[i], 'selected', children[i] === target);
-              }
+      <script>
+        var defaultTarget = Polymer.dom(myFit).parentNode;
+
+        // Listen for resize and scroll on window.
+        window.addEventListener('resize', refit);
+        window.addEventListener('scroll', refit);
+
+        var _raf = null;
+
+        function refit() {
+          _raf && window.cancelAnimationFrame(_raf);
+          _raf = window.requestAnimationFrame(function() {
+            _raf = null;
+            myFit.refit();
+          });
+        }
+
+        function updatePositionTarget(target) {
+          target = myFit.positionTarget === target ? defaultTarget : target;
+          myFit.positionTarget.style.backgroundColor = '';
+          target.style.backgroundColor = 'orange';
+          myFit.positionTarget = target;
+          refit();
+        }
+
+        function updateAlign(target) {
+          if (target.hasAttribute('horizontal-align')) {
+            myFit.horizontalAlign = target.getAttribute('horizontal-align');
+            var children = target.parentNode.querySelectorAll('[horizontal-align]');
+            for (var i = 0; i < children.length; i++) {
+              children[i].classList.toggle('selected', children[i] === target);
             }
-            if (target.hasAttribute('vertical-align')) {
-              myFit.verticalAlign = target.getAttribute('vertical-align');
-              var children = target.parentNode.querySelectorAll('[vertical-align]');
-              for (var i = 0; i < children.length; i++) {
-                toggleClass(children[i], 'selected', children[i] === target);
-              }
-            }
-            template.refit();
-          };
-
-          template.toggleNoOverlap = function(e) {
-            myFit.noOverlap = !myFit.noOverlap;
-            toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.noOverlap);
-            template.refit();
-          };
-
-          template.toggleDynamicAlign = function(e) {
-            myFit.dynamicAlign = !myFit.dynamicAlign;
-            toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.dynamicAlign);
-            template.refit();
-          };
-
-          // Listen for resize and scroll on window.
-          window.addEventListener('resize', template.refit);
-          window.addEventListener('scroll', template.refit);
-
-          function toggleClass(element, cssClass, condition) {
-            element.classList[condition ? 'add' : 'remove'](cssClass);
           }
-        </script>
-      </template>
+          if (target.hasAttribute('vertical-align')) {
+            myFit.verticalAlign = target.getAttribute('vertical-align');
+            var children = target.parentNode.querySelectorAll('[vertical-align]');
+            for (var i = 0; i < children.length; i++) {
+              children[i].classList.toggle('selected', children[i] === target);
+            }
+          }
+          refit();
+        }
+
+        function toggleNoOverlap(target) {
+          myFit.noOverlap = !myFit.noOverlap;
+          target.classList.toggle('selected', myFit.noOverlap);
+          refit();
+        }
+
+        function toggleDynamicAlign(target) {
+          myFit.dynamicAlign = !myFit.dynamicAlign;
+          target.classList.toggle('selected', myFit.dynamicAlign);
+          refit();
+        }
+
+      </script>
     </template>
   </demo-snippet>
 
