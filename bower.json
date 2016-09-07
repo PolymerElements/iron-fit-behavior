@@ -30,7 +30,8 @@
   "resolutions": {
     "polymer": "master",
     "test-fixture": "custom-elements-v1",
-    "webcomponentsjs": "v1-polymer-edits"
+    "webcomponentsjs": "v1-polymer-edits",
+    "iron-flex-layout": "2.0-preview"
   },
   "ignore": []
 }
