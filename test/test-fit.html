@@ -22,19 +22,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <slot></slot>
   </template>
-
+  <script>
+    Polymer({
+      is: 'test-fit',
+      behaviors: [
+        Polymer.IronFitBehavior
+      ]
+    });
+  </script>
 </dom-module>
-
-<script>
-
-  Polymer({
-
-    is: 'test-fit',
-
-    behaviors: [
-      Polymer.IronFitBehavior
-    ]
-
-  });
-
-</script>
