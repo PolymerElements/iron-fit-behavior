@@ -249,7 +249,11 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
 
     attached: function() {
       // Memoize this to avoid expensive calculations & relayouts.
-      this._isRTL = window.getComputedStyle(this).direction == 'rtl';
+      // Make sure we do it only once
+      if(typeof this._isRTL === 'undefined') {
+        this._isRTL = window.getComputedStyle(this).direction == 'rtl';
+      }
+          
       this.positionTarget = this.positionTarget || this._defaultPositionTarget;
       if (this.autoFitOnAttach) {
         if (window.getComputedStyle(this).display === 'none') {
