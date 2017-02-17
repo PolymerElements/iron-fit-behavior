@@ -250,7 +250,7 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
     attached: function() {
       // Memoize this to avoid expensive calculations & relayouts.
       // Make sure we do it only once
-      if(typeof this._isRTL === 'undefined') {
+      if (typeof this._isRTL === 'undefined') {
         this._isRTL = window.getComputedStyle(this).direction == 'rtl';
       }
           
