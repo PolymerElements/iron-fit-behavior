@@ -23,9 +23,9 @@
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
-    "test-fixture": "PolymerElements/test-fixture#safari9-constructor",
-    "web-component-tester": "^5",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#v1"
+    "test-fixture": "PolymerElements/test-fixture#^3.0.0-rc.1",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0-prerelease.6",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.1"
   },
   "variants": {
     "1.x": {
@@ -41,8 +41,5 @@
       }
     }
   },
-  "ignore": [],
-  "resolutions": {
-    "test-fixture": "safari9-constructor"
-  }
+  "ignore": []
 }
