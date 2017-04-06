@@ -19,11 +19,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="simple-fit.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="simple-fit.html">
 
   <custom-style><style is="custom-style" include="demo-pages-shared-styles">
+    .centered {
+      min-width: 600px;
+    }
     demo-snippet {
       --demo-snippet-code: {
         max-height: 250px;
@@ -65,16 +68,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           border-radius: 5px;
           border-width: 1px;
         }
-
         button.selected {
           background-color: #b3e5fc;
         }
       </style>
-
       <dom-bind><template is="dom-bind">
-        <dom-repeat items="[[containers]]"><template is="dom-repeat">
+        <template is="dom-repeat" items="[[containers]]">
           <div class="target" on-tap="updatePositionTarget">Target</div>
-        </template></dom-repeat>
+        </template>
         <simple-fit id="myFit" auto-fit-on-attach>
           <h2>Align</h2>
           <p>
@@ -94,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </simple-fit>
         <script>
           var defaultTarget = Polymer.dom(myFit).parentNode;
-          var template = document.querySelector('dom-bind');
+          var template = document.querySelector('template[is="dom-bind"]');
 
           template.containers = new Array(30);
 
@@ -104,16 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             myFit.positionTarget.style.backgroundColor = '';
             target.style.backgroundColor = 'orange';
             myFit.positionTarget = target;
-            template.refit();
-          };
-
-          template._raf = null;
-          template.refit = function() {
-            template._raf && window.cancelAnimationFrame(template._raf);
-            template._raf = window.requestAnimationFrame(function() {
-              template._raf = null;
-              myFit.refit();
-            });
+            refit();
           };
 
           template.updateAlign = function(e) {
@@ -132,24 +124,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 toggleClass(children[i], 'selected', children[i] === target);
               }
             }
-            template.refit();
+            refit();
           };
 
           template.toggleNoOverlap = function(e) {
             myFit.noOverlap = !myFit.noOverlap;
             toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.noOverlap);
-            template.refit();
+            refit();
           };
 
           template.toggleDynamicAlign = function(e) {
             myFit.dynamicAlign = !myFit.dynamicAlign;
             toggleClass(Polymer.dom(e).rootTarget, 'selected', myFit.dynamicAlign);
-            template.refit();
+            refit();
           };
 
+          // Support hybrid mode
+          var templatev1 = document.querySelector('dom-bind');
+          templatev1.containers = template.containers;
+          templatev1.updatePositionTarget = template.updatePositionTarget;
+          templatev1.updateAlign = template.updateAlign;
+          templatev1.toggleNoOverlap = template.toggleNoOverlap;
+          templatev1.toggleDynamicAlign = template.toggleDynamicAlign;
+
           // Listen for resize and scroll on window.
-          window.addEventListener('resize', template.refit);
-          window.addEventListener('scroll', template.refit);
+          window.addEventListener('resize', refit);
+          window.addEventListener('scroll', refit);
+
+          var _raf = null;
+          function refit() {
+            _raf && window.cancelAnimationFrame(_raf);
+            _raf = window.requestAnimationFrame(function() {
+              _raf = null;
+              myFit.refit();
+            });
+          }
 
           function toggleClass(element, cssClass, condition) {
             element.classList[condition ? 'add' : 'remove'](cssClass);
