@@ -255,14 +255,16 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       }
       this.positionTarget = this.positionTarget || this._defaultPositionTarget;
       if (this.autoFitOnAttach) {
-        // If invisible or in a shadow root that's still not connected, wait a tick.
-        if (window.getComputedStyle(this).display === 'none' ||
-          document.body.contains(this) === false) {
+        if (window.getComputedStyle(this).display === 'none') {
           this.__deferredFit = setTimeout(function() {
             this.__deferredFit = null;
             this.fit();
           }.bind(this));
         } else {
+          // NOTE: shadydom won't apply the upgrades synchronously for performance reasons
+          // but this might lead to wrong layout information webcomponents/shadydom#120
+          // We flush because we need correct layout bounding rect info.
+          window.ShadyDOM && ShadyDOM.flush();
           this.fit();
         }
       }
