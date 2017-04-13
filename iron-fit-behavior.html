@@ -260,6 +260,10 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
             this.fit();
           }.bind(this));
         } else {
+          // NOTE: shadydom won't apply the upgrades synchronously for performance reasons
+          // but this might lead to wrong layout information webcomponents/shadydom#120
+          // We flush because we need correct layout bounding rect info.
+          window.ShadyDOM && ShadyDOM.flush();
           this.fit();
         }
       }
