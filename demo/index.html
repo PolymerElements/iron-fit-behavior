@@ -94,17 +94,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <button on-tap="toggleDynamicAlign">dynamic align</button>
         </simple-fit>
         <script>
-          // TODO(valdrin) Enable tap because of Polymer/polymer#4509, remove when fixed
-          Polymer.Gestures.add(document, 'tap', null);
 
-          var defaultTarget = Polymer.dom(myFit).parentNode;
           var template = document.querySelector('template[is="dom-bind"]');
 
           template.containers = new Array(30);
 
           template.updatePositionTarget = function(e) {
             var target = Polymer.dom(e).rootTarget;
-            target = myFit.positionTarget === target ? defaultTarget : target;
+            target = myFit.positionTarget === target ? myFit._defaultPositionTarget : target;
             myFit.positionTarget.style.backgroundColor = '';
             target.style.backgroundColor = 'orange';
             myFit.positionTarget = target;
