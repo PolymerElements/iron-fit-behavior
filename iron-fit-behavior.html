@@ -255,7 +255,7 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       }
       this.positionTarget = this.positionTarget || this._defaultPositionTarget;
       if (this.autoFitOnAttach) {
-        if (computedStyle.display === 'none') {
+        if (window.getComputedStyle(this).display === 'none') {
           setTimeout(function() {
             this.fit();
           }.bind(this));
