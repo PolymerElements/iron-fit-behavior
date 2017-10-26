@@ -531,7 +531,7 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       return target.getBoundingClientRect();
     },
 
-    __getCroppedArea: function(position, size, fitRect) {
+    __getOffscreenArea: function(position, size, fitRect) {
       var verticalCrop = Math.min(0, position.top) + Math.min(0, fitRect.bottom - (position.top + size.height));
       var horizontalCrop = Math.min(0, position.left) + Math.min(0, fitRect.right - (position.left + size.width));
       return Math.abs(verticalCrop) * size.width + Math.abs(horizontalCrop) * size.height;
@@ -616,21 +616,21 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
 
       var position;
       for (var i = 0; i < positions.length; i++) {
-        var pos = positions[i];
+        var candidate = positions[i];
+        var vAlignOk = candidate.verticalAlign === vAlign;
+        var hAlignOk = candidate.horizontalAlign === hAlign;
 
         // If both vAlign and hAlign are defined, return exact match.
         // For dynamicAlign and noOverlap we'll have more than one candidate, so
-        // we'll have to check the croppedArea to make the best choice.
-        if (!this.dynamicAlign && !this.noOverlap &&
-          pos.verticalAlign === vAlign && pos.horizontalAlign === hAlign) {
-          position = pos;
+        // we'll have to check the offscreenArea to make the best choice.
+        if (!this.dynamicAlign && !this.noOverlap && vAlignOk && hAlignOk) {
+          position = candidate;
           break;
         }
 
         // Align is ok if alignment preferences are respected. If no preferences,
         // it is considered ok.
-        var alignOk = (!vAlign || pos.verticalAlign === vAlign) &&
-          (!hAlign || pos.horizontalAlign === hAlign);
+        var alignOk = (!vAlign || vAlignOk) && (!hAlign || hAlignOk);
 
         // Filter out elements that don't match the alignment (if defined).
         // With dynamicAlign, we need to consider all the positions to find the
@@ -639,19 +639,20 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
           continue;
         }
 
-        pos.croppedArea = this.__getCroppedArea(pos, size, fitRect);
+        candidate.offscreenArea = this.__getOffscreenArea(candidate, size, fitRect);
         // If not cropped and respects the align requirements, keep it.
         // This allows to prefer positions overlapping horizontally over the
         // ones overlapping vertically.
-        if (pos.croppedArea === 0 && alignOk) {
-          position = pos;
+        if (candidate.offscreenArea === 0 && alignOk) {
+          position = candidate;
           break;
         }
-        position = position || pos;
-        var diff = pos.croppedArea - position.croppedArea;
-        // Check which crops less. If it crops equally, check if at least one align setting is ok.
-        if (diff < 0 || (diff === 0 && (pos.verticalAlign === vAlign || pos.horizontalAlign === hAlign))) {
-          position = pos;
+        position = position || candidate;
+        var diff = candidate.offscreenArea - position.offscreenArea;
+        // Check which crops less. If it crops equally, check if at least one
+        // align setting is ok.
+        if (diff < 0 || (diff === 0 && (vAlignOk || hAlignOk))) {
+          position = candidate;
         }
       }
 
