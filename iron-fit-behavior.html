@@ -247,6 +247,22 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
     },
 
     /**
+     * The browser scrollbar size, allowing overflowing containers to compensate.
+     */
+    get _scrollbarSize() {
+      var scrollEl = document.createElement('div');
+      scrollEl.style.visibility = 'hidden';
+      scrollEl.style.width = '100px';
+      scrollEl.style.overflow = 'scroll';
+      document.body.appendChild(scrollEl);
+
+      var scrollbarSize = scrollEl.offsetWidth - scrollEl.clientWidth;
+      document.body.removeChild(scrollEl);
+
+      return scrollbarSize;
+    },
+
+    /**
      * True if the element should be positioned instead of centered.
      * @private
      */
@@ -413,9 +429,15 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       top = Math.max(fitRect.top + margin.top,
         Math.min(top, bottom - this._fitInfo.sizedBy.minHeight));
 
+      var maxWidth = Math.max(right - left, this._fitInfo.sizedBy.minWidth);
+      var maxHeight = Math.max(bottom - top, this._fitInfo.sizedBy.minHeight);
+
+      if (maxHeight < this.sizingTarget.clientHeight) { maxWidth += this._scrollbarSize; }
+      if (maxWidth < this.sizingTarget.clientWidth) { maxHeight += this._scrollbarSize; }
+
       // Use right/bottom to set maxWidth/maxHeight, and respect minWidth/minHeight.
-      this.sizingTarget.style.maxWidth = Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
-      this.sizingTarget.style.maxHeight = Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
+      this.sizingTarget.style.maxWidth = maxWidth + 'px';
+      this.sizingTarget.style.maxHeight = maxHeight + 'px';
 
       // Remove the offset caused by any stacking context.
       this.style.left = (left - rect.left) + 'px';
