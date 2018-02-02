@@ -1,0 +1,10 @@
+{
+  "name": "@polymer/iron-fit-behavior",
+  "private": true,
+  "description": "Fits an element inside another element",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/iron-fit-behavior.git"
+  },
+  "license": "http://polymer.github.io/LICENSE.txt"
+}
