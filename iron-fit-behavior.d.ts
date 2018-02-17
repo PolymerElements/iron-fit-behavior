@@ -134,39 +134,41 @@ declare namespace Polymer {
      */
     autoFitOnAttach: boolean|null|undefined;
     _fitInfo: object|null;
-    _fitWidth(): any;
-    _fitHeight(): any;
-    _fitLeft(): any;
-    _fitTop(): any;
+    readonly _fitWidth: any;
+    readonly _fitHeight: any;
+    readonly _fitLeft: any;
+    readonly _fitTop: any;
 
     /**
      * The element that should be used to position the element,
      * if no position target is configured.
+     *      
      */
-    _defaultPositionTarget(): any;
+    readonly _defaultPositionTarget: any;
 
     /**
      * The horizontal align value, accounting for the RTL/LTR text direction.
+     *      
      */
-    _localeHorizontalAlign(): any;
-    attached(): any;
-    detached(): any;
+    readonly _localeHorizontalAlign: any;
+    attached(): void;
+    detached(): void;
 
     /**
      * Positions and fits the element into the `fitInto` element.
      */
-    fit(): any;
+    fit(): void;
 
     /**
      * Memoize information needed to position and size the target element.
      */
-    _discoverInfo(): any;
+    _discoverInfo(): void;
 
     /**
      * Resets the target element's position and size constraints, and clear
      * the memoized data.
      */
-    resetFit(): any;
+    resetFit(): void;
 
     /**
      * Equivalent to calling `resetFit()` and `fit()`. Useful to call this after
@@ -174,25 +176,25 @@ declare namespace Polymer {
      * positioning properties (e.g. `horizontalAlign, verticalAlign`) is updated.
      * It preserves the scroll position of the sizingTarget.
      */
-    refit(): any;
+    refit(): void;
 
     /**
      * Positions the element according to `horizontalAlign, verticalAlign`.
      */
-    position(): any;
+    position(): void;
 
     /**
      * Constrains the size of the element to `fitInto` by setting `max-height`
      * and/or `max-width`.
      */
-    constrain(): any;
-    _sizeDimension(rect: any, positionedBy: any, start: any, end: any, extent: any): any;
+    constrain(): void;
+    _sizeDimension(rect: any, positionedBy: any, start: any, end: any, extent: any): void;
 
     /**
      * Centers horizontally and vertically if not already positioned. This also sets
      * `position:fixed`.
      */
-    center(): any;
+    center(): void;
   }
 
   const IronFitBehavior: object;
