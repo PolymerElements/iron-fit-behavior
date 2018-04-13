@@ -197,6 +197,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
 
     <script>
+      'use strict';
+
       function makeScrolling(el) {
         el.classList.add('scrolling');
         var template = document.getElementById('ipsum');
@@ -483,7 +485,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             });
 
         test('scrolling sizingTarget is constrained to viewport height', function() {
-          el = fixture('sectioned');
+          var el = fixture('sectioned');
           var internal = Polymer.dom(el).querySelector('.internal');
           el.sizingTarget = internal;
           makeScrolling(internal);
@@ -495,7 +497,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('scrolling sizingTarget preserves scrolling position', function() {
-          el = fixture('scrollable');
+          var el = fixture('scrollable');
           el.scrollTop = 20;
           el.scrollLeft = 20;
           el.refit();
