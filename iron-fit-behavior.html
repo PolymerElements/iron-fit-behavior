@@ -628,6 +628,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       }
 
+      if (vAlign === 'middle' && hAlign === 'center') {
+        positions.push({
+          verticalAlign: 'middle',
+          horizontalAlign: 'center',
+          top: positionRect.top - sizeNoMargins.height / 2 +
+              positionRect.height / 2 + this.verticalOffset,
+          left: positionRect.left - sizeNoMargins.width / 2 +
+              positionRect.width / 2 + this.horizontalOffset
+        });
+      }
+
       var position;
       for (var i = 0; i < positions.length; i++) {
         var candidate = positions[i];
