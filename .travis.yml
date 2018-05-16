@@ -16,7 +16,7 @@ env:
         L4lSnuQZDY+YcXYzBZSRKjJJ1rZf18Lc/8YDgQPfkMkAItrRHGR8vblBoKiPAmtvgNxztcpZxAXTiDy1vAeVv54QnX9b1JsuOs7rrQxB4BS04Dj7LdT6DDu1p/V09MJBN11lzLVxgpxljbumwGWE4gfpDl2+rjbBt7cRV5VkVnE=
     - secure: >-
         H7dHZ9FQvJszK2UMNZJiZmzOPET3muO/XvlkUc1x3KcUlV5/tD/404V05XfFMowH7DavHFYleZkb89deYjq9PHncO9c4bp4SHD7HKN4FaGyhzfpXjg66v3dZH/OcERjaas337uUE2jo/x1jCq4HJCz2bMVh+bvd4du1C/2OWarc=
-node_js: stable
+node_js: '9'
 addons:
   firefox: latest
   apt:
