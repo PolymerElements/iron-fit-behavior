@@ -1337,6 +1337,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               });
         });
 
+        suite(
+            'when horizontalAlign is center and verticalAling is middle', function() {
+              test('element is aligned to the positionTarget center', function() {
+                el.horizontalAlign = 'center';
+                el.verticalAlign = 'middle';
+                el.refit();
+                var rect = el.getBoundingClientRect();
+                assert.equal(
+                    rect.left,
+                    parentRect.left + (parentRect.width - rect.width) / 2,
+                    'left ok');
+                assert.equal(
+                    rect.top,
+                    parentRect.top + (parentRect.height - rect.height) / 2,
+                    'top ok');
+                assert.equal(rect.width, elRect.width, 'no cropping');
+              });
+            });
+
         suite('prefer horizontal overlap to vertical overlap', function() {
           setup(function() {
             el.noOverlap = true;

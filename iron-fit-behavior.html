@@ -232,8 +232,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @private
      */
     get __shouldPosition() {
-      return (this.horizontalAlign || this.verticalAlign) &&
-          (this.horizontalAlign !== 'center' || this.verticalAlign !== 'middle');
+      return (this.horizontalAlign || this.verticalAlign) && this.positionTarget;
     },
 
     attached: function() {
@@ -626,6 +625,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               positionRect.height / 2 + this.verticalOffset,
           left: positionRect.right - size.width - this.horizontalOffset -
               (this.noOverlap ? positionRect.width : 0)
+        });
+      }
+
+      if (vAlign === 'middle' && hAlign === 'center') {
+        positions.push({
+          verticalAlign: 'middle',
+          horizontalAlign: 'center',
+          top: positionRect.top - sizeNoMargins.height / 2 +
+              positionRect.height / 2 + this.verticalOffset,
+          left: positionRect.left - sizeNoMargins.width / 2 +
+              positionRect.width / 2 + this.horizontalOffset
         });
       }
 
