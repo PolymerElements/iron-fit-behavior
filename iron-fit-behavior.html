@@ -232,8 +232,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @private
      */
     get __shouldPosition() {
-      return (this.horizontalAlign || this.verticalAlign) &&
-          (this.horizontalAlign !== 'center' || this.verticalAlign !== 'middle');
+      return (this.horizontalAlign || this.verticalAlign) && this.positionTarget;
     },
 
     attached: function() {
