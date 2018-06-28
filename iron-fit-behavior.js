@@ -1,19 +1,21 @@
 /**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+This code may only be used under the BSD style license found at
+http://polymer.github.io/LICENSE.txt The complete set of authors may be found at
+http://polymer.github.io/AUTHORS.txt The complete set of contributors may be
+found at http://polymer.github.io/CONTRIBUTORS.txt Code distributed by Google as
+part of the polymer project is also subject to an additional IP rights grant
+found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
 /**
-  `Polymer.IronFitBehavior` fits an element in another element using `max-height`
-  and `max-width`, and optionally centers it in the window or another element.
+  `Polymer.IronFitBehavior` fits an element in another element using
+  `max-height` and `max-width`, and optionally centers it in the window or
+  another element.
 
   The element will only be sized and/or positioned if it has not already been
   sized and/or positioned by CSS.
@@ -40,15 +42,15 @@ import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
   overlapping it.
 
         <div class="container">
-          <iron-fit-impl no-overlap vertical-align="auto" horizontal-align="auto">
-            Positioned around the container
+          <iron-fit-impl no-overlap vertical-align="auto"
+  horizontal-align="auto"> Positioned around the container
           </iron-fit-impl>
         </div>
 
   Use `horizontalOffset, verticalOffset` to offset the element from its
-  `positionTarget`; `Polymer.IronFitBehavior` will collapse these in order to keep
-  the element within `fitInto` boundaries, while preserving the element's CSS
-  margin values.
+  `positionTarget`; `Polymer.IronFitBehavior` will collapse these in order to
+  keep the element within `fitInto` boundaries, while preserving the element's
+  CSS margin values.
 
         <div class="container">
           <iron-fit-impl vertical-align="top" vertical-offset="20">
