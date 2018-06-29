@@ -19,37 +19,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-bundle.js"></script>
   <script type="module">
     import '@polymer/iron-demo-helpers/demo-snippet.js';
-    import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
     import './simple-fit.js';
-  </script>
-
-  <!-- FIXME(polymer-modulizer):
-        These imperative modules that innerHTML your HTML are
-        a hacky way to be sure that any mixins in included style
-        modules are ready before any elements that reference them are
-        instantiated, otherwise the CSS @apply mixin polyfill won't be
-        able to expand the underlying CSS custom properties.
-        See: https://github.com/Polymer/polymer-modulizer/issues/154
-        -->
-  <script type="module">
-    const $_documentContainer = document.createElement('template');
-
-    $_documentContainer.innerHTML =
-        `<custom-style><style is="custom-style" include="demo-pages-shared-styles">
-        .centered {
-          min-width: 600px;
-        }
-        demo-snippet {
-          --demo-snippet-code: {
-            max-height: 250px;
-          }
-        }
-      </style></custom-style>`;
-
-    document.body.appendChild($_documentContainer.content);
   </script>
 </head>
 <body unresolved class="centered">
+  <script type="module">
+    import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+
+    // Create this in a module so that the shared styles above are loaded
+    // before this element is created.
+    const $_documentContainer = document.createElement('template');
+    $_documentContainer.innerHTML =`
+      <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles"></style>
+      </custom-style>
+    `;
+    document.body.appendChild($_documentContainer.content);
+  </script>
+
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+      .centered {
+        min-width: 600px;
+      }
+
+      demo-snippet {
+        --demo-snippet-code: {
+          max-height: 250px;
+        }
+      }
+    </style>
+  </custom-style>
+
   <h3>
     An element with <code>IronFitBehavior</code> can be centered in
     <code>fitInto</code> or positioned around a <code>positionTarget</code>
@@ -122,14 +123,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     var demoSnippetDOM = dom(document.querySelector('demo-snippet'));
     var observerHandle = demoSnippetDOM.observeNodes(function() {
       var template = document.querySelector('template[is="dom-bind"]');
-      if (!template) return;
+      if (!template)
+        return;
       demoSnippetDOM.unobserveNodes(observerHandle);
 
       template.containers = new Array(30);
 
       template.updatePositionTarget = function(e) {
         var target = dom(e).rootTarget;
-        target = myFit.positionTarget === target ? myFit._defaultPositionTarget : target;
+        target =
+            myFit.positionTarget === target ? myFit._defaultPositionTarget : target;
         myFit.positionTarget.style.backgroundColor = '';
         target.style.backgroundColor = 'orange';
         myFit.positionTarget = target;
