@@ -19,13 +19,13 @@ and `max-width`, and optionally centers it in the window or another element.
 The element will only be sized and/or positioned if it has not already been
 sized and/or positioned by CSS.
 
-CSS properties               | Action
------------------------------|-------------------------------------------
-`position` set               | Element is not centered horizontally or vertically
-`top` or `bottom` set        | Element is not vertically centered
-`left` or `right` set        | Element is not horizontally centered
-`max-height` set             | Element respects `max-height`
-`max-width` set              | Element respects `max-width`
+CSS properties            | Action
+--------------------------|-------------------------------------------
+`position` set            | Element is not centered horizontally or vertically
+`top` or `bottom` set     | Element is not vertically centered
+`left` or `right` set     | Element is not horizontally centered
+`max-height` set          | Element respects `max-height`
+`max-width` set           | Element respects `max-width`
 
 `Polymer.IronFitBehavior` can position an element into another element using
 `verticalAlign` and `horizontalAlign`. This will override the element's css

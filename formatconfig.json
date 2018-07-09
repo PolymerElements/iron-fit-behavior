@@ -1,6 +1,0 @@
-{
-  "exclude": [
-    "iron-fit-behavior.js",
-    "demo/index.html"
-  ]
-}
