@@ -4,45 +4,8 @@
 
 ## IronFitBehavior
 
-`IronFitBehavior` fits an element in another element using `max-height` and
-`max-width`, and optionally centers it in the window or another element.
-
-The element will only be sized and/or positioned if it has not already been
-sized and/or positioned by CSS.
-
-| CSS properties | Action |
-| --- | --- |
-| `position` set | Element is not centered horizontally or vertically |
-| `top` or `bottom` set | Element is not vertically centered |
-| `left` or `right` set | Element is not horizontally centered |
-| `max-height` set | Element respects `max-height` |
-| `max-width` set | Element respects `max-width` |
-
-In the following examples, `<simple-fit>` is an element which mixes in
-`IronFitBehavior`.
-
-`IronFitBehavior` can position an element into another element using
-`verticalAlign` and `horizontalAlign`. This will override the element's css
-position.
-
-```html
-<div class="container">
-  <simple-fit vertical-align="top" horizontal-align="auto">
-    Positioned into the container
-  </simple-fit>
-</div>
-```
-
-Use `noOverlap` to position the element around another element without
-overlapping it.
-
-```html
-<div class="container">
-  <simple-fit no-overlap vertical-align="auto" horizontal-align="auto">
-    Positioned around the container
-  </simple-fit>
-</div>
-```
+`IronFitBehavior` positions and fits an element in the bounds of another
+element and optionally centers it in the window or the other element.
 
 See: [Documentation](https://www.webcomponents.org/element/@polymer/iron-fit-behavior),
  [Demo](https://www.webcomponents.org/element/@polymer/iron-fit-behavior/demo/demo/index.html).
