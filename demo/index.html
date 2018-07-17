@@ -17,24 +17,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
   <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
-  <script type="module">
-    import '@polymer/iron-demo-helpers/demo-snippet.js';
-    import './simple-fit.js';
-  </script>
 </head>
 <body unresolved class="centered">
   <script type="module">
+    import '@polymer/iron-demo-helpers/demo-snippet.js';
     import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+    import './simple-fit.js';
+
+    import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
     // Create this in a module so that the shared styles above are loaded
     // before this element is created.
-    const $_documentContainer = document.createElement('template');
-    $_documentContainer.innerHTML = `
+    const template = html`
       <custom-style>
         <style is="custom-style" include="demo-pages-shared-styles"></style>
       </custom-style>
     `;
-    document.body.appendChild($_documentContainer.content);
+    document.body.appendChild(template.content);
   </script>
 
   <custom-style>
