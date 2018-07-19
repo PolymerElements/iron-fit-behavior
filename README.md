@@ -25,7 +25,7 @@ import {PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
-import {IronFitBehavior} from '../iron-fit-behavior.js';
+import {IronFitBehavior} from '@polymer/iron-fit-behavior/iron-fit-behavior.js';
 
 class SimpleFit extends mixinBehaviors(IronFitBehavior, PolymerElement) {
   static get template() {
