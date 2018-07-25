@@ -32,16 +32,39 @@ class SimpleFit extends mixinBehaviors(IronFitBehavior, PolymerElement) {
     return html`
       <style>
         :host {
-          background: white;
-          border: 2px solid gray;
+          background: lightblue;
+          padding: 2px;
         }
       </style>
-      This element can be positioned using the features of IronFitBehavior.
+      verticalAlign: [[verticalAlign]], horizontalAlign: [[horizontalAlign]]
     `;
   }
 }
 
 customElements.define('simple-fit', SimpleFit);
+```
+
+Then, in your HTML:
+
+```html
+<script type="module" src="./simple-fit.js"></script>
+
+<style>
+#container {
+  margin: 3em;
+  border: 2px dashed gray;
+  padding: 3em;
+}
+</style>
+
+<div id="container">
+  The <code>&lt;simple-fit&gt;</code> below will be positioned within this div.
+  <simple-fit id="simpleFitElement"
+    vertical-align="bottom"
+    horizontal-align="left"
+    auto-fit-on-attach
+  ></simple-fit>
+</div>
 ```
 
 ## Contributing
