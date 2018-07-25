@@ -90,21 +90,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template is="dom-repeat" items="[[containers]]">
             <div class="target" on-tap="updatePositionTarget">Target</div>
           </template>
-          <simple-fit id="myFit" auto-fit-on-attach="">
+          <simple-fit id="myFit" auto-fit-on-attach>
             <h2>Align</h2>
             <p>
               <button on-tap="updateAlign" vertical-align="top">top</button>
               <button on-tap="updateAlign" vertical-align="middle">middle</button>
               <button on-tap="updateAlign" vertical-align="bottom">bottom</button>
               <button on-tap="updateAlign" vertical-align="auto">auto</button>
-              <button on-tap="updateAlign" vertical-align="">null</button>
+              <button on-tap="updateAlign" vertical-align>null</button>
             </p>
             <p>
               <button on-tap="updateAlign" horizontal-align="left">left</button>
               <button on-tap="updateAlign" horizontal-align="center">center</button>
               <button on-tap="updateAlign" horizontal-align="right">right</button>
               <button on-tap="updateAlign" horizontal-align="auto">auto</button>
-              <button on-tap="updateAlign" horizontal-align="">null</button>
+              <button on-tap="updateAlign" horizontal-align>null</button>
             </p>
             <button on-tap="toggleNoOverlap">no overlap</button>
             <button on-tap="toggleDynamicAlign">dynamic align</button>
