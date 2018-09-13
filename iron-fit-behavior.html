@@ -353,6 +353,10 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
           right: parseInt(target.marginRight, 10) || 0,
           bottom: parseInt(target.marginBottom, 10) || 0,
           left: parseInt(target.marginLeft, 10) || 0
+        },
+        sizerDimensions: {
+          clientHeight: this.sizingTarget.clientHeight || 0,
+          clientWidth: this.sizingTarget.clientWidth || 0
         }
       };
     },
@@ -439,8 +443,8 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       var maxHeight = Math.max(bottom - top, this._fitInfo.sizedBy.minHeight);
 
       // Determine if scrollbar will display and increase max size if necessary
-      if (maxHeight < this.sizingTarget.clientHeight) { maxWidth += this._scrollbarSize; }
-      if (maxWidth < this.sizingTarget.clientWidth) { maxHeight += this._scrollbarSize; }
+      if (maxHeight < this._fitInfo.sizerDimensions.clientHeight) { maxWidth += this._scrollbarSize; }
+      if (maxWidth < this._fitInfo.sizerDimensions.clientWidth) { maxHeight += this._scrollbarSize; }
 
       this.sizingTarget.style.maxWidth = maxWidth + 'px';
       this.sizingTarget.style.maxHeight = maxHeight + 'px';
