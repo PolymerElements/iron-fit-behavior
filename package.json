@@ -13,7 +13,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.0.1",
-    "@polymer/paper-styles": "^3.0.0-pre.25",
+    "@polymer/paper-styles": "^3.0.0-pre.26",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "wct-browser-legacy": "^1.0.1",
     "webmat": "^0.2.2",
