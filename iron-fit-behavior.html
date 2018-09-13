@@ -173,6 +173,27 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
       /** @type {?Object} */
       _fitInfo: {
         type: Object
+      },
+
+      /**
+       * The browser scrollbar size, allowing overflowing containers to compensate.
+       * @private
+       */
+      _scrollbarSize: {
+        type: Number,
+        readOnly: true,
+        value: (function computeScrollbarSize() {
+          var scrollEl = document.createElement('div');
+          scrollEl.style.visibility = 'hidden';
+          scrollEl.style.width = '100px';
+          scrollEl.style.overflow = 'scroll';
+          document.body.appendChild(scrollEl);
+
+          var scrollbarSize = scrollEl.offsetWidth - scrollEl.clientWidth;
+          document.body.removeChild(scrollEl);
+
+          return scrollbarSize;
+        })(),
       }
     },
 
@@ -244,22 +265,6 @@ within `fitInto` boundaries, while preserving the element's CSS margin values.
         }
       }
       return this.horizontalAlign;
-    },
-
-    /**
-     * The browser scrollbar size, allowing overflowing containers to compensate.
-     */
-    get _scrollbarSize() {
-      var scrollEl = document.createElement('div');
-      scrollEl.style.visibility = 'hidden';
-      scrollEl.style.width = '100px';
-      scrollEl.style.overflow = 'scroll';
-      document.body.appendChild(scrollEl);
-
-      var scrollbarSize = scrollEl.offsetWidth - scrollEl.clientWidth;
-      document.body.removeChild(scrollEl);
-
-      return scrollbarSize;
     },
 
     /**
