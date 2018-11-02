@@ -359,7 +359,10 @@ export const IronFitBehavior = {
     }
     this._discoverInfo();
 
-    this.style.position = 'fixed';
+    if (!this.horizontalAlign === 'undefined') {
+      this.style.position = 'fixed';
+    }
+
     // Need border-box for margin/padding.
     this.sizingTarget.style.boxSizing = 'border-box';
     // Set to 0, 0 in order to discover any offset caused by parent stacking
@@ -411,8 +414,21 @@ export const IronFitBehavior = {
         Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
 
     // Remove the offset caused by any stacking context.
-    this.style.left = (left - rect.left) + 'px';
-    this.style.top = (top - rect.top) + 'px';
+    if (!this.horizontalAlign === 'undefined') {
+      this.style.left = (left - rect.left) + 'px';
+      this.sizingTarget.style.maxWidth =
+      Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
+    }
+
+    if (this.verticalAlign === 'undefined') {
+      this.sizingTarget.style.maxHeight =
+      Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
+      this.style.top = (top - rect.top) + 'px';
+
+    }else{
+      this.style.top = '';
+    }
+    
   },
 
   /**
