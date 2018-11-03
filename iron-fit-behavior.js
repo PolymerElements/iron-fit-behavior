@@ -10,7 +10,7 @@ found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
 
-import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
 /**
 `Polymer.IronFitBehavior` fits an element in another element using `max-height`
@@ -72,7 +72,7 @@ export const IronFitBehavior = {
      */
     sizingTarget: {
       type: Object,
-      value: function() {
+      value: function () {
         return this;
       }
     },
@@ -80,41 +80,41 @@ export const IronFitBehavior = {
     /**
      * The element to fit `this` into.
      */
-    fitInto: {type: Object, value: window},
+    fitInto: { type: Object, value: window },
 
     /**
      * Will position the element around the positionTarget without overlapping
      * it.
      */
-    noOverlap: {type: Boolean},
+    noOverlap: { type: Boolean },
 
     /**
      * The element that should be used to position the element. If not set, it
      * will default to the parent node.
      * @type {!Element}
      */
-    positionTarget: {type: Element},
+    positionTarget: { type: Element },
 
     /**
      * The orientation against which to align the element horizontally
      * relative to the `positionTarget`. Possible values are "left", "right",
      * "center", "auto".
      */
-    horizontalAlign: {type: String},
+    horizontalAlign: { type: String },
 
     /**
      * The orientation against which to align the element vertically
      * relative to the `positionTarget`. Possible values are "top", "bottom",
      * "middle", "auto".
      */
-    verticalAlign: {type: String},
+    verticalAlign: { type: String },
 
     /**
      * If true, it will use `horizontalAlign` and `verticalAlign` values as
      * preferred alignment and if there's not enough space, it will pick the
      * values which minimize the cropping.
      */
-    dynamicAlign: {type: Boolean},
+    dynamicAlign: { type: Boolean },
 
     /**
      * A pixel value that will be added to the position calculated for the
@@ -130,7 +130,7 @@ export const IronFitBehavior = {
      * or decrease the distance to the right side of the screen: a negative
      * offset will move the dropdown to the right; a positive one, to the left.
      */
-    horizontalOffset: {type: Number, value: 0, notify: true},
+    horizontalOffset: { type: Number, value: 0, notify: true },
 
     /**
      * A pixel value that will be added to the position calculated for the
@@ -146,15 +146,15 @@ export const IronFitBehavior = {
      * or decrease the distance to the bottom side of the screen: a negative
      * offset will move the dropdown downwards; a positive one, upwards.
      */
-    verticalOffset: {type: Number, value: 0, notify: true},
+    verticalOffset: { type: Number, value: 0, notify: true },
 
     /**
      * Set to true to auto-fit on attach.
      */
-    autoFitOnAttach: {type: Boolean, value: false},
+    autoFitOnAttach: { type: Boolean, value: false },
 
     /** @type {?Object} */
-    _fitInfo: {type: Object}
+    _fitInfo: { type: Object }
   },
 
   get _fitWidth() {
@@ -235,7 +235,7 @@ export const IronFitBehavior = {
     return (this.horizontalAlign || this.verticalAlign) && this.positionTarget;
   },
 
-  attached: function() {
+  attached: function () {
     // Memoize this to avoid expensive calculations & relayouts.
     // Make sure we do it only once
     if (typeof this._isRTL === 'undefined') {
@@ -244,7 +244,7 @@ export const IronFitBehavior = {
     this.positionTarget = this.positionTarget || this._defaultPositionTarget;
     if (this.autoFitOnAttach) {
       if (window.getComputedStyle(this).display === 'none') {
-        setTimeout(function() {
+        setTimeout(function () {
           this.fit();
         }.bind(this));
       } else {
@@ -257,7 +257,7 @@ export const IronFitBehavior = {
     }
   },
 
-  detached: function() {
+  detached: function () {
     if (this.__deferredFit) {
       clearTimeout(this.__deferredFit);
       this.__deferredFit = null;
@@ -267,7 +267,7 @@ export const IronFitBehavior = {
   /**
    * Positions and fits the element into the `fitInto` element.
    */
-  fit: function() {
+  fit: function () {
     this.position();
     this.constrain();
     this.center();
@@ -277,7 +277,7 @@ export const IronFitBehavior = {
    * Memoize information needed to position and size the target element.
    * @suppress {deprecated}
    */
-  _discoverInfo: function() {
+  _discoverInfo: function () {
     if (this._fitInfo) {
       return;
     }
@@ -297,11 +297,11 @@ export const IronFitBehavior = {
       },
       positionedBy: {
         vertically: target.top !== 'auto' ?
-            'top' :
-            (target.bottom !== 'auto' ? 'bottom' : null),
+          'top' :
+          (target.bottom !== 'auto' ? 'bottom' : null),
         horizontally: target.left !== 'auto' ?
-            'left' :
-            (target.right !== 'auto' ? 'right' : null)
+          'left' :
+          (target.right !== 'auto' ? 'right' : null)
       },
       sizedBy: {
         height: sizer.maxHeight !== 'none',
@@ -322,7 +322,7 @@ export const IronFitBehavior = {
    * Resets the target element's position and size constraints, and clear
    * the memoized data.
    */
-  resetFit: function() {
+  resetFit: function () {
     var info = this._fitInfo || {};
     for (var property in info.sizerInlineStyle) {
       this.sizingTarget.style[property] = info.sizerInlineStyle[property];
@@ -340,7 +340,7 @@ export const IronFitBehavior = {
    * positioning properties (e.g. `horizontalAlign, verticalAlign`) is updated.
    * It preserves the scroll position of the sizingTarget.
    */
-  refit: function() {
+  refit: function () {
     var scrollLeft = this.sizingTarget.scrollLeft;
     var scrollTop = this.sizingTarget.scrollTop;
     this.resetFit();
@@ -352,7 +352,7 @@ export const IronFitBehavior = {
   /**
    * Positions the element according to `horizontalAlign, verticalAlign`.
    */
-  position: function() {
+  position: function () {
     if (!this.__shouldPosition) {
       // needs to be centered, and it is done after constrain.
       return;
@@ -383,12 +383,12 @@ export const IronFitBehavior = {
     };
 
     var position = this.__getPosition(
-        this._localeHorizontalAlign,
-        this.verticalAlign,
-        size,
-        rect,
-        positionRect,
-        fitRect);
+      this._localeHorizontalAlign,
+      this.verticalAlign,
+      size,
+      rect,
+      positionRect,
+      fitRect);
 
     var left = position.left + margin.left;
     var top = position.top + margin.top;
@@ -400,42 +400,42 @@ export const IronFitBehavior = {
 
     // Keep left/top within fitInto respecting the margin.
     left = Math.max(
-        fitRect.left + margin.left,
-        Math.min(left, right - this._fitInfo.sizedBy.minWidth));
+      fitRect.left + margin.left,
+      Math.min(left, right - this._fitInfo.sizedBy.minWidth));
     top = Math.max(
-        fitRect.top + margin.top,
-        Math.min(top, bottom - this._fitInfo.sizedBy.minHeight));
+      fitRect.top + margin.top,
+      Math.min(top, bottom - this._fitInfo.sizedBy.minHeight));
 
     // Use right/bottom to set maxWidth/maxHeight, and respect
     // minWidth/minHeight.
     this.sizingTarget.style.maxWidth =
-        Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
+      Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
     this.sizingTarget.style.maxHeight =
-        Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
+      Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
 
     // Remove the offset caused by any stacking context.
     if (!this.horizontalAlign === 'undefined') {
       this.style.left = (left - rect.left) + 'px';
       this.sizingTarget.style.maxWidth =
-      Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
+        Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
     }
 
     if (this.verticalAlign === 'undefined') {
       this.sizingTarget.style.maxHeight =
-      Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
+        Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
       this.style.top = (top - rect.top) + 'px';
 
-    }else{
+    } else {
       this.style.top = '';
     }
-    
+
   },
 
   /**
    * Constrains the size of the element to `fitInto` by setting `max-height`
    * and/or `max-width`.
    */
-  constrain: function() {
+  constrain: function () {
     if (this.__shouldPosition) {
       return;
     }
@@ -459,11 +459,11 @@ export const IronFitBehavior = {
     var rect = this.getBoundingClientRect();
     if (!info.sizedBy.height) {
       this.__sizeDimension(
-          rect, info.positionedBy.vertically, 'top', 'bottom', 'Height');
+        rect, info.positionedBy.vertically, 'top', 'bottom', 'Height');
     }
     if (!info.sizedBy.width) {
       this.__sizeDimension(
-          rect, info.positionedBy.horizontally, 'left', 'right', 'Width');
+        rect, info.positionedBy.horizontally, 'left', 'right', 'Width');
     }
   },
 
@@ -471,14 +471,14 @@ export const IronFitBehavior = {
    * @protected
    * @deprecated
    */
-  _sizeDimension: function(rect, positionedBy, start, end, extent) {
+  _sizeDimension: function (rect, positionedBy, start, end, extent) {
     this.__sizeDimension(rect, positionedBy, start, end, extent);
   },
 
   /**
    * @private
    */
-  __sizeDimension: function(rect, positionedBy, start, end, extent) {
+  __sizeDimension: function (rect, positionedBy, start, end, extent) {
     var info = this._fitInfo;
     var fitRect = this.__getNormalizedRect(this.fitInto);
     var max = extent === 'Width' ? fitRect.width : fitRect.height;
@@ -488,14 +488,14 @@ export const IronFitBehavior = {
     var offsetExtent = 'offset' + extent;
     var sizingOffset = this[offsetExtent] - this.sizingTarget[offsetExtent];
     this.sizingTarget.style['max' + extent] =
-        (max - margin - offset - sizingOffset) + 'px';
+      (max - margin - offset - sizingOffset) + 'px';
   },
 
   /**
    * Centers horizontally and vertically if not already positioned. This also
    * sets `position:fixed`.
    */
-  center: function() {
+  center: function () {
     if (this.__shouldPosition) {
       return;
     }
@@ -530,7 +530,7 @@ export const IronFitBehavior = {
     }
   },
 
-  __getNormalizedRect: function(target) {
+  __getNormalizedRect: function (target) {
     if (target === document.documentElement || target === window) {
       return {
         top: 0,
@@ -544,18 +544,18 @@ export const IronFitBehavior = {
     return target.getBoundingClientRect();
   },
 
-  __getOffscreenArea: function(position, size, fitRect) {
+  __getOffscreenArea: function (position, size, fitRect) {
     var verticalCrop = Math.min(0, position.top) +
-        Math.min(0, fitRect.bottom - (position.top + size.height));
+      Math.min(0, fitRect.bottom - (position.top + size.height));
     var horizontalCrop = Math.min(0, position.left) +
-        Math.min(0, fitRect.right - (position.left + size.width));
+      Math.min(0, fitRect.right - (position.left + size.width));
     return Math.abs(verticalCrop) * size.width +
-        Math.abs(horizontalCrop) * size.height;
+      Math.abs(horizontalCrop) * size.height;
   },
 
 
-  __getPosition: function(
-      hAlign, vAlign, size, sizeNoMargins, positionRect, fitRect) {
+  __getPosition: function (
+    hAlign, vAlign, size, sizeNoMargins, positionRect, fitRect) {
     // All the possible configurations.
     // Ordered as top-left, top-right, bottom-left, bottom-right.
     var positions = [
@@ -611,17 +611,17 @@ export const IronFitBehavior = {
         verticalAlign: 'top',
         horizontalAlign: 'center',
         top: positionRect.top + this.verticalOffset +
-            (this.noOverlap ? positionRect.height : 0),
+          (this.noOverlap ? positionRect.height : 0),
         left: positionRect.left - sizeNoMargins.width / 2 +
-            positionRect.width / 2 + this.horizontalOffset
+          positionRect.width / 2 + this.horizontalOffset
       });
       positions.push({
         verticalAlign: 'bottom',
         horizontalAlign: 'center',
         top: positionRect.bottom - size.height - this.verticalOffset -
-            (this.noOverlap ? positionRect.height : 0),
+          (this.noOverlap ? positionRect.height : 0),
         left: positionRect.left - sizeNoMargins.width / 2 +
-            positionRect.width / 2 + this.horizontalOffset
+          positionRect.width / 2 + this.horizontalOffset
       });
     }
 
@@ -630,17 +630,17 @@ export const IronFitBehavior = {
         verticalAlign: 'middle',
         horizontalAlign: 'left',
         top: positionRect.top - sizeNoMargins.height / 2 +
-            positionRect.height / 2 + this.verticalOffset,
+          positionRect.height / 2 + this.verticalOffset,
         left: positionRect.left + this.horizontalOffset +
-            (this.noOverlap ? positionRect.width : 0)
+          (this.noOverlap ? positionRect.width : 0)
       });
       positions.push({
         verticalAlign: 'middle',
         horizontalAlign: 'right',
         top: positionRect.top - sizeNoMargins.height / 2 +
-            positionRect.height / 2 + this.verticalOffset,
+          positionRect.height / 2 + this.verticalOffset,
         left: positionRect.right - size.width - this.horizontalOffset -
-            (this.noOverlap ? positionRect.width : 0)
+          (this.noOverlap ? positionRect.width : 0)
       });
     }
 
@@ -649,9 +649,9 @@ export const IronFitBehavior = {
         verticalAlign: 'middle',
         horizontalAlign: 'center',
         top: positionRect.top - sizeNoMargins.height / 2 +
-            positionRect.height / 2 + this.verticalOffset,
+          positionRect.height / 2 + this.verticalOffset,
         left: positionRect.left - sizeNoMargins.width / 2 +
-            positionRect.width / 2 + this.horizontalOffset
+          positionRect.width / 2 + this.horizontalOffset
       });
     }
 
@@ -681,7 +681,7 @@ export const IronFitBehavior = {
       }
 
       candidate.offscreenArea =
-          this.__getOffscreenArea(candidate, size, fitRect);
+        this.__getOffscreenArea(candidate, size, fitRect);
       // If not cropped and respects the align requirements, keep it.
       // This allows to prefer positions overlapping horizontally over the
       // ones overlapping vertically.
