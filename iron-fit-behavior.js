@@ -235,6 +235,7 @@ export const IronFitBehavior = {
     return (this.horizontalAlign || this.verticalAlign) && this.positionTarget;
   },
 
+  /** @override */
   attached: function() {
     // Memoize this to avoid expensive calculations & relayouts.
     // Make sure we do it only once
@@ -257,6 +258,7 @@ export const IronFitBehavior = {
     }
   },
 
+  /** @override */
   detached: function() {
     if (this.__deferredFit) {
       clearTimeout(this.__deferredFit);
