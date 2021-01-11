@@ -417,14 +417,13 @@ export const IronFitBehavior = {
     // minWidth/minHeight.
     const maxWidth = Math.max(right - left, this._fitInfo.sizedBy.minWidth);
     const maxHeight = Math.max(bottom - top, this._fitInfo.sizedBy.minHeight);
-
     this.sizingTarget.style.maxWidth = maxWidth + 'px';
     this.sizingTarget.style.maxHeight = maxHeight + 'px';
 
     // Remove the offset caused by any stacking context.
     const leftPosition = left - rect.left;
-    this.style.left = `${leftPosition}px`;
     const topPosition = top - rect.top;
+    this.style.left = `${leftPosition}px`;
     this.style.top = `${topPosition}px`;
 
     const sizingTargetScrollbarWidth =
