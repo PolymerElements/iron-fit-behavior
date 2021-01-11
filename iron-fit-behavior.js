@@ -438,14 +438,14 @@ export const IronFitBehavior = {
           Math.max(right - left, maxWidth + sizingTargetScrollbarWidth);
       this.sizingTarget.style.maxWidth = `${expandedMaxWidth}px`;
 
-      if (position.horizontalAlign === "left") {
-        // We don't need to adjust the left position, since expanding the
-        // `maxWidth` will always cause the element to expand towards the right.
-      } else if (position.horizontalAlign === "center") {
-        // Subtract half of `expandedMaxWidth - maxWidth` to the left position.
+      // Adjust the left position if the alignment requires it.
+      //
+      // If `position.horizontalAlign === "left"`, then we don't need to adjust
+      // the left position, since expanding the `maxWidth` will always cause the
+      // element to expand towards the right.
+      if (position.horizontalAlign === "center") {
         this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth) / 2}px`;
       } else if (position.horizontalAlign === "right") {
-        // Subtract all of `expandedMaxWidth - maxWidth` to the left position.
         this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth)}px`;
       }
     }
@@ -457,15 +457,14 @@ export const IronFitBehavior = {
           Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight);
       this.sizingTarget.style.maxHeight = `${expandedMaxHeight}px`;
 
-      if (position.verticalAlign === "top") {
-        // We don't need to adjust the top position, since expanding the
-        // `maxHeight` will always cause the element to expand towards the
-        // bottom.
-      } else if (position.verticalAlign === "middle") {
-        // Subtract half of `expandedMaxHeight - maxHeight` to the top position.
+      // Adjust the top position if the alignment requires it.
+      //
+      // If `position.verticalAlign === "top"`, then we don't need to adjust
+      // the top position, since expanding the `maxHeight` will always cause the
+      // element to expand towards the bottom.
+      if (position.verticalAlign === "middle") {
         this.style.top = `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
       } else if (position.verticalAlign === "bottom") {
-        // Subtract all of `expandedMaxHeight - maxHeight` to the top position.
         this.style.top = `${topPosition - (expandedMaxHeight - maxHeight)}px`;
       }
     }
