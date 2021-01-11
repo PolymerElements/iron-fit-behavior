@@ -415,14 +415,29 @@ export const IronFitBehavior = {
 
     // Use right/bottom to set maxWidth/maxHeight, and respect
     // minWidth/minHeight.
-    this.sizingTarget.style.maxWidth =
-        Math.max(right - left, this._fitInfo.sizedBy.minWidth) + 'px';
-    this.sizingTarget.style.maxHeight =
-        Math.max(bottom - top, this._fitInfo.sizedBy.minHeight) + 'px';
+    const maxWidth = Math.max(right - left, this._fitInfo.sizedBy.minWidth);
+    const maxHeight = Math.max(bottom - top, this._fitInfo.sizedBy.minHeight);
+
+    this.sizingTarget.style.maxWidth = maxWidth + 'px';
+    this.sizingTarget.style.maxHeight = maxHeight + 'px';
 
     // Remove the offset caused by any stacking context.
     this.style.left = (left - rect.left) + 'px';
     this.style.top = (top - rect.top) + 'px';
+
+    // Measure visible scrollbars and add to the size limit for that dimension.
+    const sizingTargetScrollbarWidth =
+        this.sizingTarget.offsetWidth - this.sizingTarget.clientWidth;
+    const sizingTargetScrollbarHeight =
+        this.sizingTarget.offsetHeight - this.sizingTarget.clientHeight;
+
+    if (sizingTargetScrollbarWidth > 0) {
+      this.sizingTarget.style.maxWidth = `${maxWidth + sizingTargetScrollbarWidth}px`;
+    }
+
+    if (sizingTargetScrollbarHeight > 0) {
+      this.sizingTarget.style.maxHeight = `${maxHeight + sizingTargetScrollbarHeight}px`;
+    }
   },
 
   /**
