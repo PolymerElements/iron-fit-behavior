@@ -457,14 +457,14 @@ export const IronFitBehavior = {
           Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight);
       this.sizingTarget.style.maxHeight = `${expandedMaxHeight}px`;
 
-      if (position.horizontalAlign === "top") {
+      if (position.verticalAlign === "top") {
         // We don't need to adjust the top position, since expanding the
         // `maxHeight` will always cause the element to expand towards the
         // bottom.
-      } else if (position.horizontalAlign === "middle") {
+      } else if (position.verticalAlign === "middle") {
         // Subtract half of `expandedMaxHeight - maxHeight` to the top position.
         this.style.top = `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
-      } else if (position.horizontalAlign === "bottom") {
+      } else if (position.verticalAlign === "bottom") {
         // Subtract all of `expandedMaxHeight - maxHeight` to the top position.
         this.style.top = `${topPosition - (expandedMaxHeight - maxHeight)}px`;
       }
