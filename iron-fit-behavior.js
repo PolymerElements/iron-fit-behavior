@@ -440,12 +440,13 @@ export const IronFitBehavior = {
 
       // Adjust the left position if the alignment requires it.
       //
-      // If `position.horizontalAlign === "left"`, then we don't need to adjust
+      // If `position.horizontalAlign === 'left'`, then we don't need to adjust
       // the left position, since expanding the `maxWidth` will always cause the
       // element to expand towards the right.
-      if (position.horizontalAlign === "center") {
-        this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth) / 2}px`;
-      } else if (position.horizontalAlign === "right") {
+      if (position.horizontalAlign === 'center') {
+        this.style.left =
+            `${leftPosition - (expandedMaxWidth - maxWidth) / 2}px`;
+      } else if (position.horizontalAlign === 'right') {
         this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth)}px`;
       }
     }
@@ -459,12 +460,13 @@ export const IronFitBehavior = {
 
       // Adjust the top position if the alignment requires it.
       //
-      // If `position.verticalAlign === "top"`, then we don't need to adjust
+      // If `position.verticalAlign === 'top'`, then we don't need to adjust
       // the top position, since expanding the `maxHeight` will always cause the
       // element to expand towards the bottom.
-      if (position.verticalAlign === "middle") {
-        this.style.top = `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
-      } else if (position.verticalAlign === "bottom") {
+      if (position.verticalAlign === 'middle') {
+        this.style.top =
+            `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
+      } else if (position.verticalAlign === 'bottom') {
         this.style.top = `${topPosition - (expandedMaxHeight - maxHeight)}px`;
       }
     }
