@@ -422,21 +422,53 @@ export const IronFitBehavior = {
     this.sizingTarget.style.maxHeight = maxHeight + 'px';
 
     // Remove the offset caused by any stacking context.
-    this.style.left = (left - rect.left) + 'px';
-    this.style.top = (top - rect.top) + 'px';
+    const leftPosition = left - rect.left;
+    this.style.left = `${leftPosition}px`;
+    const topPosition = top - rect.top;
+    this.style.top = `${topPosition}px`;
 
-    // Measure visible scrollbars and add to the size limit for that dimension.
     const sizingTargetScrollbarWidth =
         this.sizingTarget.offsetWidth - this.sizingTarget.clientWidth;
     const sizingTargetScrollbarHeight =
         this.sizingTarget.offsetHeight - this.sizingTarget.clientHeight;
 
     if (sizingTargetScrollbarWidth > 0) {
-      this.sizingTarget.style.maxWidth = `${maxWidth + sizingTargetScrollbarWidth}px`;
+      // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
+      // allowed width of `right - left`.
+      const expandedMaxWidth =
+          Math.max(right - left, maxWidth + sizingTargetScrollbarWidth);
+      this.sizingTarget.style.maxWidth = `${expandedMaxWidth}px`;
+
+      if (position.horizontalAlign === "left") {
+        // We don't need to adjust the left position, since expanding the
+        // `maxWidth` will always cause the element to expand towards the right.
+      } else if (position.horizontalAlign === "center") {
+        // Subtract half of `expandedMaxWidth - maxWidth` to the left position.
+        this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth) / 2}px`;
+      } else if (position.horizontalAlign === "right") {
+        // Subtract all of `expandedMaxWidth - maxWidth` to the left position.
+        this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth)}px`;
+      }
     }
 
     if (sizingTargetScrollbarHeight > 0) {
-      this.sizingTarget.style.maxHeight = `${maxHeight + sizingTargetScrollbarHeight}px`;
+      // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
+      // allowed height of `bottom - top`.
+      const expandedMaxHeight =
+          Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight);
+      this.sizingTarget.style.maxHeight = `${expandedMaxHeight}px`;
+
+      if (position.horizontalAlign === "top") {
+        // We don't need to adjust the top position, since expanding the
+        // `maxHeight` will always cause the element to expand towards the
+        // bottom.
+      } else if (position.horizontalAlign === "middle") {
+        // Subtract half of `expandedMaxHeight - maxHeight` to the top position.
+        this.style.top = `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
+      } else if (position.horizontalAlign === "bottom") {
+        // Subtract all of `expandedMaxHeight - maxHeight` to the top position.
+        this.style.top = `${topPosition - (expandedMaxHeight - maxHeight)}px`;
+      }
     }
   },
 
