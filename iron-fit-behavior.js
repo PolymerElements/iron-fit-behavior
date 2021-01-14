@@ -426,10 +426,10 @@ export const IronFitBehavior = {
     this.style.left = `${leftPosition}px`;
     this.style.top = `${topPosition}px`;
 
-    const offsetWidth = this.sizingTarget.offsetWidth;
-    const offsetHeight = this.sizingTarget.offsetHeight;
-    const sizingTargetScrollbarWidth = offsetWidth - this.sizingTarget.clientWidth;
-    const sizingTargetScrollbarHeight = offsetHeight - this.sizingTarget.clientHeight;
+    const initialOffsetWidth = this.sizingTarget.offsetWidth;
+    const initialOffsetHeight = this.sizingTarget.offsetHeight;
+    const sizingTargetScrollbarWidth = initialOffsetWidth - this.sizingTarget.clientWidth;
+    const sizingTargetScrollbarHeight = initialOffsetHeight - this.sizingTarget.clientHeight;
 
     if (sizingTargetScrollbarWidth > 0) {
       // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
@@ -438,7 +438,7 @@ export const IronFitBehavior = {
           `${Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
 
       // Measure the element's real change in width.
-      const addedWidth = this.sizingTarget.offsetWidth - offsetWidth;
+      const addedWidth = this.sizingTarget.offsetWidth - initialOffsetWidth;
 
       // Adjust the left position if the alignment requires it.
       //
@@ -459,7 +459,7 @@ export const IronFitBehavior = {
           `${Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
 
       // Measure the element's real change in height.
-      const addedHeight = this.sizingTarget.offsetHeight - offsetHeight;
+      const addedHeight = this.sizingTarget.offsetHeight - initialOffsetHeight;
 
       // Adjust the top position if the alignment requires it.
       //
