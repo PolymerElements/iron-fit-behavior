@@ -426,17 +426,19 @@ export const IronFitBehavior = {
     this.style.left = `${leftPosition}px`;
     this.style.top = `${topPosition}px`;
 
-    const sizingTargetScrollbarWidth =
-        this.sizingTarget.offsetWidth - this.sizingTarget.clientWidth;
-    const sizingTargetScrollbarHeight =
-        this.sizingTarget.offsetHeight - this.sizingTarget.clientHeight;
+    const offsetWidth = this.sizingTarget.offsetWidth;
+    const offsetHeight = this.sizingTarget.offsetHeight;
+    const sizingTargetScrollbarWidth = offsetWidth - this.sizingTarget.clientWidth;
+    const sizingTargetScrollbarHeight = offsetHeight - this.sizingTarget.clientHeight;
 
     if (sizingTargetScrollbarWidth > 0) {
       // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
       // allowed width of `right - left`.
-      const expandedMaxWidth =
-          Math.max(right - left, maxWidth + sizingTargetScrollbarWidth);
-      this.sizingTarget.style.maxWidth = `${expandedMaxWidth}px`;
+      this.sizingTarget.style.maxWidth =
+          `${Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
+
+      // Measure the element's real change in width.
+      const addedWidth = this.sizingTarget.offsetWidth - offsetWidth;
 
       // Adjust the left position if the alignment requires it.
       //
@@ -444,19 +446,20 @@ export const IronFitBehavior = {
       // the left position, since expanding the `maxWidth` will always cause the
       // element to expand towards the right.
       if (position.horizontalAlign === 'center') {
-        this.style.left =
-            `${leftPosition - (expandedMaxWidth - maxWidth) / 2}px`;
+        this.style.left = `${leftPosition - addedWidth / 2}px`;
       } else if (position.horizontalAlign === 'right') {
-        this.style.left = `${leftPosition - (expandedMaxWidth - maxWidth)}px`;
+        this.style.left = `${leftPosition - addedWidth}px`;
       }
     }
 
     if (sizingTargetScrollbarHeight > 0) {
       // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
       // allowed height of `bottom - top`.
-      const expandedMaxHeight =
-          Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight);
-      this.sizingTarget.style.maxHeight = `${expandedMaxHeight}px`;
+      this.sizingTarget.style.maxHeight =
+          `${Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
+
+      // Measure the element's real change in height.
+      const addedHeight = this.sizingTarget.offsetHeight - offsetHeight;
 
       // Adjust the top position if the alignment requires it.
       //
@@ -464,10 +467,9 @@ export const IronFitBehavior = {
       // the top position, since expanding the `maxHeight` will always cause the
       // element to expand towards the bottom.
       if (position.verticalAlign === 'middle') {
-        this.style.top =
-            `${topPosition - (expandedMaxHeight - maxHeight) / 2}px`;
+        this.style.top = `${topPosition - addedHeight / 2}px`;
       } else if (position.verticalAlign === 'bottom') {
-        this.style.top = `${topPosition - (expandedMaxHeight - maxHeight)}px`;
+        this.style.top = `${topPosition - addedHeight}px`;
       }
     }
   },
