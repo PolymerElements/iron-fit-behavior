@@ -153,6 +153,13 @@ export const IronFitBehavior = {
      */
     autoFitOnAttach: {type: Boolean, value: false},
 
+    /**
+     * If true and scrollbars are added to `sizingTarget` after it is
+     * positioned, the size of the added scrollbars will be added to its
+     * `maxWidth` and `maxHeight`.
+     */
+    expandSizingTargetForScrollbars: {type: Boolean, value: false},
+
     /** @type {?Object} */
     _fitInfo: {type: Object}
   },
@@ -381,10 +388,16 @@ export const IronFitBehavior = {
     var positionRect = this.__getNormalizedRect(this.positionTarget);
     var fitRect = this.__getNormalizedRect(this.fitInto);
 
-    const unpositionedOffsetWidth = this.sizingTarget.offsetWidth;
-    const unpositionedOffsetHeight = this.sizingTarget.offsetHeight;
-    const unpositionedClientWidth = this.sizingTarget.clientWidth;
-    const unpositionedClientHeight = this.sizingTarget.clientHeight;
+    let unpositionedOffsetWidth;
+    let unpositionedOffsetHeight;
+    let unpositionedClientWidth;
+    let unpositionedClientHeight;
+    if (this.expandSizingTargetForScrollbars) {
+      unpositionedOffsetWidth = this.sizingTarget.offsetWidth;
+      unpositionedOffsetHeight = this.sizingTarget.offsetHeight;
+      unpositionedClientWidth = this.sizingTarget.clientWidth;
+      unpositionedClientHeight = this.sizingTarget.clientHeight;
+    }
 
     var margin = this._fitInfo.margin;
 
@@ -431,64 +444,66 @@ export const IronFitBehavior = {
     this.style.left = `${leftPosition}px`;
     this.style.top = `${topPosition}px`;
 
-    const positionedOffsetWidth = this.sizingTarget.offsetWidth;
-    const positionedOffsetHeight = this.sizingTarget.offsetHeight;
-    const positionedClientWidth = this.sizingTarget.clientWidth;
-    const positionedClientHeight = this.sizingTarget.clientHeight;
+    if (this.expandSizingTargetForScrollbars) {
+      const positionedOffsetWidth = this.sizingTarget.offsetWidth;
+      const positionedOffsetHeight = this.sizingTarget.offsetHeight;
+      const positionedClientWidth = this.sizingTarget.clientWidth;
+      const positionedClientHeight = this.sizingTarget.clientHeight;
 
-    const unpositionedWidthDelta = unpositionedOffsetWidth - unpositionedClientWidth;
-    const unpositionedHeightDelta = unpositionedOffsetHeight - unpositionedClientHeight;
-    const positionedWidthDelta = positionedOffsetWidth - positionedClientWidth;
-    const positionedHeightDelta = positionedOffsetHeight - positionedClientHeight;
+      const unpositionedWidthDelta = unpositionedOffsetWidth - unpositionedClientWidth;
+      const unpositionedHeightDelta = unpositionedOffsetHeight - unpositionedClientHeight;
+      const positionedWidthDelta = positionedOffsetWidth - positionedClientWidth;
+      const positionedHeightDelta = positionedOffsetHeight - positionedClientHeight;
 
-    if (positionedWidthDelta > unpositionedWidthDelta) {
-      const sizingTargetScrollbarWidth =
-          positionedWidthDelta - unpositionedWidthDelta;
+      if (positionedWidthDelta > unpositionedWidthDelta) {
+        const sizingTargetScrollbarWidth =
+            positionedWidthDelta - unpositionedWidthDelta;
 
-      if (sizingTargetScrollbarWidth > 0) {
-        // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
-        // allowed width of `right - left`.
-        this.sizingTarget.style.maxWidth =
-            `${Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
+        if (sizingTargetScrollbarWidth > 0) {
+          // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
+          // allowed width of `right - left`.
+          this.sizingTarget.style.maxWidth =
+              `${Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
 
-        // Measure the element's real change in width.
-        const addedWidth = this.sizingTarget.offsetWidth - positionedOffsetWidth;
+          // Measure the element's real change in width.
+          const addedWidth = this.sizingTarget.offsetWidth - positionedOffsetWidth;
 
-        // Adjust the left position if the alignment requires it.
-        //
-        // If `position.horizontalAlign === 'left'`, then we don't need to adjust
-        // the left position, since expanding the `maxWidth` will always cause the
-        // element to expand towards the right.
-        if (position.horizontalAlign === 'center') {
-          this.style.left = `${leftPosition - addedWidth / 2}px`;
-        } else if (position.horizontalAlign === 'right') {
-          this.style.left = `${leftPosition - addedWidth}px`;
+          // Adjust the left position if the alignment requires it.
+          //
+          // If `position.horizontalAlign === 'left'`, then we don't need to adjust
+          // the left position, since expanding the `maxWidth` will always cause the
+          // element to expand towards the right.
+          if (position.horizontalAlign === 'center') {
+            this.style.left = `${leftPosition - addedWidth / 2}px`;
+          } else if (position.horizontalAlign === 'right') {
+            this.style.left = `${leftPosition - addedWidth}px`;
+          }
         }
       }
-    }
 
-    if (positionedHeightDelta > unpositionedHeightDelta) {
-      const sizingTargetScrollbarHeight =
-          positionedHeightDelta - unpositionedHeightDelta;
+      if (positionedHeightDelta > unpositionedHeightDelta) {
+        const sizingTargetScrollbarHeight =
+            positionedHeightDelta - unpositionedHeightDelta;
 
-      if (sizingTargetScrollbarHeight > 0) {
-        // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
-        // allowed height of `bottom - top`.
-        this.sizingTarget.style.maxHeight = `${
-            Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
+        if (sizingTargetScrollbarHeight > 0) {
+          // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
+          // allowed height of `bottom - top`.
+          this.sizingTarget.style.maxHeight = `${
+              Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
 
-        // Measure the element's real change in height.
-        const addedHeight = this.sizingTarget.offsetHeight - positionedOffsetHeight;
+          // Measure the element's real change in height.
+          const addedHeight = this.sizingTarget.offsetHeight - positionedOffsetHeight;
 
-        // Adjust the top position if the alignment requires it.
-        //
-        // If `position.verticalAlign === 'top'`, then we don't need to adjust
-        // the top position, since expanding the `maxHeight` will always cause the
-        // element to expand towards the bottom.
-        if (position.verticalAlign === 'middle') {
-          this.style.top = `${topPosition - addedHeight / 2}px`;
-        } else if (position.verticalAlign === 'bottom') {
-          this.style.top = `${topPosition - addedHeight}px`;
+          // Adjust the top position if the alignment requires it.
+          //
+          // If `position.verticalAlign === 'top'`, then we don't need to adjust
+          // the top position, since expanding the `maxHeight` will always cause the
+          // element to expand towards the bottom.
+          if (position.verticalAlign === 'middle') {
+            this.style.top = `${topPosition - addedHeight / 2}px`;
+          } else if (position.verticalAlign === 'bottom') {
+            this.style.top = `${topPosition - addedHeight}px`;
+          }
         }
       }
     }
