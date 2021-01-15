@@ -450,10 +450,14 @@ export const IronFitBehavior = {
       const positionedClientWidth = this.sizingTarget.clientWidth;
       const positionedClientHeight = this.sizingTarget.clientHeight;
 
-      const unpositionedWidthDelta = unpositionedOffsetWidth - unpositionedClientWidth;
-      const unpositionedHeightDelta = unpositionedOffsetHeight - unpositionedClientHeight;
-      const positionedWidthDelta = positionedOffsetWidth - positionedClientWidth;
-      const positionedHeightDelta = positionedOffsetHeight - positionedClientHeight;
+      const unpositionedWidthDelta =
+          unpositionedOffsetWidth - unpositionedClientWidth;
+      const unpositionedHeightDelta =
+          unpositionedOffsetHeight - unpositionedClientHeight;
+      const positionedWidthDelta =
+          positionedOffsetWidth - positionedClientWidth;
+      const positionedHeightDelta =
+          positionedOffsetHeight - positionedClientHeight;
 
       if (positionedWidthDelta > unpositionedWidthDelta) {
         const sizingTargetScrollbarWidth =
@@ -462,11 +466,12 @@ export const IronFitBehavior = {
         if (sizingTargetScrollbarWidth > 0) {
           // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
           // allowed width of `right - left`.
-          this.sizingTarget.style.maxWidth =
-              `${Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
+          this.sizingTarget.style.maxWidth = `${
+              Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
 
           // Measure the element's real change in width.
-          const addedWidth = this.sizingTarget.offsetWidth - positionedOffsetWidth;
+          const addedWidth =
+              this.sizingTarget.offsetWidth - positionedOffsetWidth;
 
           // Adjust the left position if the alignment requires it.
           //
@@ -489,10 +494,12 @@ export const IronFitBehavior = {
           // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
           // allowed height of `bottom - top`.
           this.sizingTarget.style.maxHeight = `${
-              Math.max(bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
+              Math.max(
+                  bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
 
           // Measure the element's real change in height.
-          const addedHeight = this.sizingTarget.offsetHeight - positionedOffsetHeight;
+          const addedHeight =
+              this.sizingTarget.offsetHeight - positionedOffsetHeight;
 
           // Adjust the top position if the alignment requires it.
           //
