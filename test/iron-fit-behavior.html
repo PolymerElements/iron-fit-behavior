@@ -86,6 +86,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-sizing: border-box;
       }
 
+      #nearBottom {
+        position: fixed;
+        bottom: 32px;
+        height: 32px;
+        width: 32px;
+        left: 50%;
+        border: 1px dashed black;
+      }
+
       .sizer {
         width: 9999px;
         height: 9999px;
@@ -94,6 +103,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </head>
   <body>
     <div class="constrain"></div>
+
+    <div id="nearBottom"></div>
 
     <test-fixture id="basic">
       <template>
@@ -183,6 +194,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <test-fit auto-fit-on-attach class="scrolling">
           scrollable
           <div class="sizer"></div>
+        </test-fit>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="expandSizingTargetForScrollbars">
+      <template>
+        <test-fit expand-sizing-target-for-scrollbars class="scrolling">
+          scrollable
         </test-fit>
       </template>
     </test-fixture>
@@ -1399,6 +1418,80 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             assert.equal(rect.right, parentRect.right, 'right ok');
             assert.equal(rect.bottom, parentRect.top, 'bottom ok');
           });
+        });
+      });
+
+      suite('expand-sizing-target-for-scrollbars', function() {
+        let el;
+
+        setup(function() {
+          el = fixture('expandSizingTargetForScrollbars');
+
+          // Add enough items to cause vertical overflow when the element is
+          // positioned near the edge of the screen, but not enough to
+          // overflow when measured at the top left corner.
+          for (let i = 0; i < 10; i++) {
+            const div = document.createElement('div');
+            div.style.whiteSpace = 'nowrap';
+            div.appendChild(document.createTextNode(`Item ${i} has enough text to overflow horizontally and vertically.`));
+            el.appendChild(div);
+          }
+
+          el.positionTarget = document.getElementById('nearBottom');
+        });
+
+        test('Vertical scrollbar size is added when top-left aligned.', function() {
+          el.verticalAlign = 'top';
+          el.horizontalAlign = 'left';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientWidth, el.scrollWidth);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still top-left aligned.
+          assert.equal(positionTargetRect.left, elRect.left);
+          assert.equal(positionTargetRect.top, elRect.top);
+        });
+
+        test('Vertical scrollbar size is added when top-center aligned.', function() {
+          el.verticalAlign = 'top';
+          el.horizontalAlign = 'center';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientWidth, el.scrollWidth);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still top-center aligned.
+          const positionTargetWidth = positionTargetRect.right - positionTargetRect.left;
+          const elWidth = elRect.right - elRect.left;
+          assert.closeTo(
+            positionTargetRect.left + positionTargetWidth / 2,
+            elRect.left + elWidth / 2,
+            1
+          );
+          assert.equal(positionTargetRect.top, elRect.top);
+        });
+
+        test('Vertical scrollbar size is added when top-right aligned.', function() {
+          el.verticalAlign = 'top';
+          el.horizontalAlign = 'right';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientWidth, el.scrollWidth);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still top-left aligned.
+          assert.equal(positionTargetRect.right, elRect.right);
+          assert.equal(positionTargetRect.top, elRect.top);
         });
       });
     </script>
