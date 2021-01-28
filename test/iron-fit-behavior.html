@@ -88,19 +88,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       #nearTop {
         position: fixed;
-        top: 32px;
-        height: 32px;
-        width: 32px;
         left: 50%;
+        top: 32px;
+        width: 32px;
+        height: 32px;
+        border: 1px dashed black;
+      }
+
+      #nearRight {
+        position: fixed;
+        right: 32px;
+        top: 50%;
+        width: 32px;
+        height: 32px;
         border: 1px dashed black;
       }
 
       #nearBottom {
         position: fixed;
-        bottom: 32px;
-        height: 32px;
-        width: 32px;
         left: 50%;
+        bottom: 32px;
+        width: 32px;
+        height: 32px;
         border: 1px dashed black;
       }
 
@@ -114,6 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="constrain"></div>
 
     <div id="nearTop"></div>
+    <div id="nearRight"></div>
     <div id="nearBottom"></div>
 
     <test-fixture id="basic">
@@ -1559,6 +1569,63 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           // The element is still bottom-left aligned.
           assert.equal(positionTargetRect.right, elRect.right);
+          assert.equal(positionTargetRect.bottom, elRect.bottom);
+        });
+
+        test('Horizontal scrollbar size is added when top-left aligned.', function() {
+          el.positionTarget = document.getElementById('nearRight');
+          el.verticalAlign = 'top';
+          el.horizontalAlign = 'left';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientHeight, el.scrollHeight);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still top-left aligned.
+          assert.equal(positionTargetRect.left, elRect.left);
+          assert.equal(positionTargetRect.top, elRect.top);
+        });
+
+        test('Horizontal scrollbar size is added when middle-left aligned.', function() {
+          el.positionTarget = document.getElementById('nearRight');
+          el.verticalAlign = 'middle';
+          el.horizontalAlign = 'left';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientHeight, el.scrollHeight);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still middle-left aligned.
+          const positionTargetHeight = positionTargetRect.bottom - positionTargetRect.top;
+          const elHeight = elRect.bottom - elRect.top;
+          assert.closeTo(
+            positionTargetRect.top + positionTargetHeight / 2,
+            elRect.top + elHeight / 2,
+            1
+          );
+          assert.equal(positionTargetRect.left, elRect.left);
+        });
+
+        test('Horizontal scrollbar size is added when bottom-left aligned.', function() {
+          el.positionTarget = document.getElementById('nearRight');
+          el.verticalAlign = 'bottom';
+          el.horizontalAlign = 'left';
+          el.fit();
+
+          // The element does not overflow when expanded by the scrollbar size.
+          assert.equal(el.clientHeight, el.scrollHeight);
+
+          const positionTargetRect = el.positionTarget.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+
+          // The element is still bottom-left aligned.
+          assert.equal(positionTargetRect.left, elRect.left);
           assert.equal(positionTargetRect.bottom, elRect.bottom);
         });
       });
