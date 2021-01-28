@@ -1456,20 +1456,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function() {
           el = fixture('expandSizingTargetForScrollbars');
-
-          // Add enough items to cause vertical overflow when the element is
-          // positioned near the edge of the screen, but not enough to
-          // overflow when measured at the top left corner.
-          for (let i = 0; i < 10; i++) {
-            const div = document.createElement('div');
-            div.style.whiteSpace = 'nowrap';
-            div.appendChild(document.createTextNode(`Item ${
-                i} has enough text to overflow horizontally and vertically.`));
-            el.appendChild(div);
-          }
         });
 
         test('Vertical scrollbar size is added when top-left aligned.', function() {
+          const tallDiv = document.createElement('div');
+          tallDiv.style.height = '100px';
+          el.appendChild(tallDiv);
+
           el.positionTarget = document.getElementById('nearBottom');
           el.verticalAlign = 'top';
           el.horizontalAlign = 'left';
@@ -1487,6 +1480,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Vertical scrollbar size is added when top-center aligned.', function() {
+          const tallDiv = document.createElement('div');
+          tallDiv.style.height = '100px';
+          el.appendChild(tallDiv);
+
           el.positionTarget = document.getElementById('nearBottom');
           el.verticalAlign = 'top';
           el.horizontalAlign = 'center';
@@ -1510,6 +1507,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
 
         test('Vertical scrollbar size is added when top-right aligned.', function() {
+          const tallDiv = document.createElement('div');
+          tallDiv.style.height = '100px';
+          el.appendChild(tallDiv);
+
           el.positionTarget = document.getElementById('nearBottom');
           el.verticalAlign = 'top';
           el.horizontalAlign = 'right';
@@ -1528,6 +1529,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         test(
             'Vertical scrollbar size is added when bottom-left aligned.', function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
+
               el.positionTarget = document.getElementById('nearTop');
               el.verticalAlign = 'bottom';
               el.horizontalAlign = 'left';
@@ -1547,6 +1552,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Vertical scrollbar size is added when bottom-center aligned.',
             function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
+
               el.positionTarget = document.getElementById('nearTop');
               el.verticalAlign = 'bottom';
               el.horizontalAlign = 'center';
@@ -1572,6 +1581,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Vertical scrollbar size is added when bottom-right aligned.',
             function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
+
               el.positionTarget = document.getElementById('nearTop');
               el.verticalAlign = 'bottom';
               el.horizontalAlign = 'right';
@@ -1589,6 +1602,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             });
 
         test('Horizontal scrollbar size is added when top-left aligned.', function() {
+          const wideDiv = document.createElement('div');
+          wideDiv.style.width = '100px';
+          el.appendChild(wideDiv);
+
           el.positionTarget = document.getElementById('nearRight');
           el.verticalAlign = 'top';
           el.horizontalAlign = 'left';
@@ -1608,6 +1625,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Horizontal scrollbar size is added when middle-left aligned.',
             function() {
+              const wideDiv = document.createElement('div');
+              wideDiv.style.width = '100px';
+              el.appendChild(wideDiv);
+
               el.positionTarget = document.getElementById('nearRight');
               el.verticalAlign = 'middle';
               el.horizontalAlign = 'left';
@@ -1633,6 +1654,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Horizontal scrollbar size is added when bottom-left aligned.',
             function() {
+              const wideDiv = document.createElement('div');
+              wideDiv.style.width = '100px';
+              el.appendChild(wideDiv);
+
               el.positionTarget = document.getElementById('nearRight');
               el.verticalAlign = 'bottom';
               el.horizontalAlign = 'left';
@@ -1651,6 +1676,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         test(
             'Horizontal scrollbar size is added when top-right aligned.', function() {
+              const wideDiv = document.createElement('div');
+              wideDiv.style.width = '100px';
+              el.appendChild(wideDiv);
+
               el.positionTarget = document.getElementById('nearLeft');
               el.verticalAlign = 'top';
               el.horizontalAlign = 'right';
@@ -1670,6 +1699,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Horizontal scrollbar size is added when middle-right aligned.',
             function() {
+              const wideDiv = document.createElement('div');
+              wideDiv.style.width = '100px';
+              el.appendChild(wideDiv);
+
               el.positionTarget = document.getElementById('nearLeft');
               el.verticalAlign = 'middle';
               el.horizontalAlign = 'right';
@@ -1695,6 +1728,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Horizontal scrollbar size is added when bottom-right aligned.',
             function() {
+              const wideDiv = document.createElement('div');
+              wideDiv.style.width = '100px';
+              el.appendChild(wideDiv);
+
               el.positionTarget = document.getElementById('nearLeft');
               el.verticalAlign = 'bottom';
               el.horizontalAlign = 'right';
