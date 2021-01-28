@@ -1469,14 +1469,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           // The element does not overflow when expanded by the scrollbar size.
-          assert.equal(el.clientWidth, el.scrollWidth);
+          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
           const positionTargetRect = el.positionTarget.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
 
           // The element is still top-left aligned.
-          assert.equal(positionTargetRect.left, elRect.left);
-          assert.equal(positionTargetRect.top, elRect.top);
+          assert.closeTo(positionTargetRect.left, elRect.left, 1);
+          assert.closeTo(positionTargetRect.top, elRect.top, 1);
         });
 
         test('Vertical scrollbar size is added when top-center aligned.', function() {
@@ -1490,7 +1490,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           // The element does not overflow when expanded by the scrollbar size.
-          assert.equal(el.clientWidth, el.scrollWidth);
+          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
           const positionTargetRect = el.positionTarget.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
@@ -1503,7 +1503,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               positionTargetRect.left + positionTargetWidth / 2,
               elRect.left + elWidth / 2,
               1);
-          assert.equal(positionTargetRect.top, elRect.top);
+          assert.closeTo(positionTargetRect.top, elRect.top, 1);
         });
 
         test('Vertical scrollbar size is added when top-right aligned.', function() {
@@ -1517,14 +1517,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           // The element does not overflow when expanded by the scrollbar size.
-          assert.equal(el.clientWidth, el.scrollWidth);
+          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
           const positionTargetRect = el.positionTarget.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
 
           // The element is still top-left aligned.
-          assert.equal(positionTargetRect.right, elRect.right);
-          assert.equal(positionTargetRect.top, elRect.top);
+          assert.closeTo(positionTargetRect.right, elRect.right, 1);
+          assert.closeTo(positionTargetRect.top, elRect.top, 1);
         });
 
         test(
@@ -1539,14 +1539,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientWidth, el.scrollWidth);
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
               // The element is still bottom-left aligned.
-              assert.equal(positionTargetRect.left, elRect.left);
-              assert.equal(positionTargetRect.bottom, elRect.bottom);
+              assert.closeTo(positionTargetRect.left, elRect.left, 1);
+              assert.closeTo(positionTargetRect.bottom, elRect.bottom, 1);
             });
 
         test(
@@ -1562,7 +1562,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientWidth, el.scrollWidth);
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
@@ -1575,7 +1575,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   positionTargetRect.left + positionTargetWidth / 2,
                   elRect.left + elWidth / 2,
                   1);
-              assert.equal(positionTargetRect.bottom, elRect.bottom);
+              assert.closeTo(positionTargetRect.bottom, elRect.bottom, 1);
             });
 
         test(
@@ -1591,14 +1591,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientWidth, el.scrollWidth);
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
               // The element is still bottom-left aligned.
-              assert.equal(positionTargetRect.right, elRect.right);
-              assert.equal(positionTargetRect.bottom, elRect.bottom);
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              assert.closeTo(positionTargetRect.bottom, elRect.bottom, 1);
             });
 
         test('Horizontal scrollbar size is added when top-left aligned.', function() {
@@ -1612,14 +1612,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           // The element does not overflow when expanded by the scrollbar size.
-          assert.equal(el.clientHeight, el.scrollHeight);
+          assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
           const positionTargetRect = el.positionTarget.getBoundingClientRect();
           const elRect = el.getBoundingClientRect();
 
           // The element is still top-left aligned.
-          assert.equal(positionTargetRect.left, elRect.left);
-          assert.equal(positionTargetRect.top, elRect.top);
+          assert.closeTo(positionTargetRect.left, elRect.left, 1);
+          assert.closeTo(positionTargetRect.top, elRect.top, 1);
         });
 
         test(
@@ -1635,7 +1635,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientHeight, el.scrollHeight);
+              assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
@@ -1648,7 +1648,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   positionTargetRect.top + positionTargetHeight / 2,
                   elRect.top + elHeight / 2,
                   1);
-              assert.equal(positionTargetRect.left, elRect.left);
+              assert.closeTo(positionTargetRect.left, elRect.left, 1);
             });
 
         test(
@@ -1664,14 +1664,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientHeight, el.scrollHeight);
+              assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
               // The element is still bottom-left aligned.
-              assert.equal(positionTargetRect.left, elRect.left);
-              assert.equal(positionTargetRect.bottom, elRect.bottom);
+              assert.closeTo(positionTargetRect.left, elRect.left, 1);
+              assert.closeTo(positionTargetRect.bottom, elRect.bottom, 1);
             });
 
         test(
@@ -1686,14 +1686,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientHeight, el.scrollHeight);
+              assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
               // The element is still top-right aligned.
-              assert.equal(positionTargetRect.right, elRect.right);
-              assert.equal(positionTargetRect.top, elRect.top);
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              assert.closeTo(positionTargetRect.top, elRect.top, 1);
             });
 
         test(
@@ -1709,7 +1709,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientHeight, el.scrollHeight);
+              assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
@@ -1722,7 +1722,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   positionTargetRect.top + positionTargetHeight / 2,
                   elRect.top + elHeight / 2,
                   1);
-              assert.equal(positionTargetRect.right, elRect.right);
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
             });
 
         test(
@@ -1738,14 +1738,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               // The element does not overflow when expanded by the scrollbar size.
-              assert.equal(el.clientHeight, el.scrollHeight);
+              assert.closeTo(el.clientHeight, el.scrollHeight, 1);
 
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
               // The element is still bottom-right aligned.
-              assert.equal(positionTargetRect.right, elRect.right);
-              assert.equal(positionTargetRect.bottom, elRect.bottom);
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              assert.closeTo(positionTargetRect.bottom, elRect.bottom, 1);
             });
       });
     </script>
