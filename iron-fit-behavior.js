@@ -467,7 +467,7 @@ export const IronFitBehavior = {
           // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
           // allowed width of `right - left`.
           this.sizingTarget.style.maxWidth = `${
-              Math.max(right - left, maxWidth + sizingTargetScrollbarWidth)}px`;
+              Math.min(fitRect.width, maxWidth + sizingTargetScrollbarWidth)}px`;
 
           // Measure the element's real change in width.
           const addedWidth =
@@ -494,8 +494,7 @@ export const IronFitBehavior = {
           // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
           // allowed height of `bottom - top`.
           this.sizingTarget.style.maxHeight = `${
-              Math.max(
-                  bottom - top, maxHeight + sizingTargetScrollbarHeight)}px`;
+              Math.min(fitRect.height, maxHeight + sizingTargetScrollbarHeight)}px`;
 
           // Measure the element's real change in height.
           const addedHeight =
