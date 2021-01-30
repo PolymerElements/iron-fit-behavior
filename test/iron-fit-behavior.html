@@ -258,17 +258,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             r2.bottom <= r1.top);
       }
 
-      /**
-       * Firefox and Safari have a bug where elements with `overflow: auto;` and
-       * width based on their content's natural size (e.g. `position: fixed;`,
-       * `display: inline-block;`) will have their scrollbar rendered
-       * overlapping the content. Chrome actually also exhibits a similar bug
-       * but doesn't display the scrollbar here or in the state measured during
-       * the tests, so this ends up being sufficient to distinguish these cases.
-       *
-       * https://bugzilla.mozilla.org/show_bug.cgi?id=764076
-       * https://bugs.webkit.org/show_bug.cgi?id=17309
-       */
+      // Firefox and Safari have a bug where elements with `overflow: auto;` and
+      // width based on their content's natural size (e.g. `position: fixed;`,
+      // `display: inline-block;`) will have their scrollbar rendered
+      // overlapping the content. Chrome actually also exhibits a similar bug
+      // but doesn't display the scrollbar here or in the state measured during
+      // the tests, so this ends up being sufficient to distinguish these cases.
+      //
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=764076
+      // https://bugs.webkit.org/show_bug.cgi?id=17309
       const testIfNoOverflowAutoWidthBug = (() => {
         const container = document.createElement('div');
         Object.assign(container.style, {
@@ -287,7 +285,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         container.appendChild(content);
 
         document.body.appendChild(container);
-        const hasOverflowAutoWidthBug = (container.offsetHeight - container.clientHeight) > 0;
+        const hasOverflowAutoWidthBug =
+            (container.offsetHeight - container.clientHeight) > 0;
         document.body.removeChild(container);
 
         return (...args) => (!hasOverflowAutoWidthBug ? test : test.skip)(...args);
@@ -1493,77 +1492,80 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el = fixture('expandSizingTargetForScrollbars');
         });
 
-        testIfNoOverflowAutoWidthBug('Vertical scrollbar size is added when top-left aligned.', function() {
-          const tallDiv = document.createElement('div');
-          tallDiv.style.height = '100px';
-          el.appendChild(tallDiv);
+        testIfNoOverflowAutoWidthBug(
+            'Vertical scrollbar size is added when top-left aligned.', function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
 
-          el.positionTarget = document.getElementById('nearBottom');
-          el.verticalAlign = 'top';
-          el.horizontalAlign = 'left';
-          el.fit();
+              el.positionTarget = document.getElementById('nearBottom');
+              el.verticalAlign = 'top';
+              el.horizontalAlign = 'left';
+              el.fit();
 
-          // The element does not horizontally overflow when expanded by the
-          // scrollbar size.
-          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
+              // The element does not horizontally overflow when expanded by the
+              // scrollbar size.
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
-          const positionTargetRect = el.positionTarget.getBoundingClientRect();
-          const elRect = el.getBoundingClientRect();
+              const positionTargetRect = el.positionTarget.getBoundingClientRect();
+              const elRect = el.getBoundingClientRect();
 
-          // The element is still top-left aligned.
-          assert.closeTo(positionTargetRect.left, elRect.left, 1);
-          assert.closeTo(positionTargetRect.top, elRect.top, 1);
-        });
+              // The element is still top-left aligned.
+              assert.closeTo(positionTargetRect.left, elRect.left, 1);
+              assert.closeTo(positionTargetRect.top, elRect.top, 1);
+            });
 
-        testIfNoOverflowAutoWidthBug('Vertical scrollbar size is added when top-center aligned.', function() {
-          const tallDiv = document.createElement('div');
-          tallDiv.style.height = '100px';
-          el.appendChild(tallDiv);
+        testIfNoOverflowAutoWidthBug(
+            'Vertical scrollbar size is added when top-center aligned.', function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
 
-          el.positionTarget = document.getElementById('nearBottom');
-          el.verticalAlign = 'top';
-          el.horizontalAlign = 'center';
-          el.fit();
+              el.positionTarget = document.getElementById('nearBottom');
+              el.verticalAlign = 'top';
+              el.horizontalAlign = 'center';
+              el.fit();
 
-          // The element does not horizontally overflow when expanded by the
-          // scrollbar size.
-          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
+              // The element does not horizontally overflow when expanded by the
+              // scrollbar size.
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
-          const positionTargetRect = el.positionTarget.getBoundingClientRect();
-          const elRect = el.getBoundingClientRect();
+              const positionTargetRect = el.positionTarget.getBoundingClientRect();
+              const elRect = el.getBoundingClientRect();
 
-          // The element is still top-center aligned.
-          const positionTargetWidth =
-              positionTargetRect.right - positionTargetRect.left;
-          const elWidth = elRect.right - elRect.left;
-          assert.closeTo(
-              positionTargetRect.left + positionTargetWidth / 2,
-              elRect.left + elWidth / 2,
-              1);
-          assert.closeTo(positionTargetRect.top, elRect.top, 1);
-        });
+              // The element is still top-center aligned.
+              const positionTargetWidth =
+                  positionTargetRect.right - positionTargetRect.left;
+              const elWidth = elRect.right - elRect.left;
+              assert.closeTo(
+                  positionTargetRect.left + positionTargetWidth / 2,
+                  elRect.left + elWidth / 2,
+                  1);
+              assert.closeTo(positionTargetRect.top, elRect.top, 1);
+            });
 
-        testIfNoOverflowAutoWidthBug('Vertical scrollbar size is added when top-right aligned.', function() {
-          const tallDiv = document.createElement('div');
-          tallDiv.style.height = '100px';
-          el.appendChild(tallDiv);
+        testIfNoOverflowAutoWidthBug(
+            'Vertical scrollbar size is added when top-right aligned.', function() {
+              const tallDiv = document.createElement('div');
+              tallDiv.style.height = '100px';
+              el.appendChild(tallDiv);
 
-          el.positionTarget = document.getElementById('nearBottom');
-          el.verticalAlign = 'top';
-          el.horizontalAlign = 'right';
-          el.fit();
+              el.positionTarget = document.getElementById('nearBottom');
+              el.verticalAlign = 'top';
+              el.horizontalAlign = 'right';
+              el.fit();
 
-          // The element does not horizontally overflow when expanded by the
-          // scrollbar size.
-          assert.closeTo(el.clientWidth, el.scrollWidth, 1);
+              // The element does not horizontally overflow when expanded by the
+              // scrollbar size.
+              assert.closeTo(el.clientWidth, el.scrollWidth, 1);
 
-          const positionTargetRect = el.positionTarget.getBoundingClientRect();
-          const elRect = el.getBoundingClientRect();
+              const positionTargetRect = el.positionTarget.getBoundingClientRect();
+              const elRect = el.getBoundingClientRect();
 
-          // The element is still top-left aligned.
-          assert.closeTo(positionTargetRect.right, elRect.right, 1);
-          assert.closeTo(positionTargetRect.top, elRect.top, 1);
-        });
+              // The element is still top-left aligned.
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              assert.closeTo(positionTargetRect.top, elRect.top, 1);
+            });
 
         testIfNoOverflowAutoWidthBug(
             'Vertical scrollbar size is added when bottom-left aligned.', function() {
