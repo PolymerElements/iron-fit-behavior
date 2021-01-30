@@ -1644,6 +1644,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         test('Horizontal scrollbar size is added when top-left aligned.', function() {
           const wideDiv = document.createElement('div');
+          // Set height to 1px to work around a Safari rendering bug: without
+          // this explicit height, the div does not contribute to the width of
+          // the element.
+          wideDiv.style.height = '1px';
           wideDiv.style.width = '100px';
           el.appendChild(wideDiv);
 
@@ -1668,6 +1672,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'Horizontal scrollbar size is added when middle-left aligned.',
             function() {
               const wideDiv = document.createElement('div');
+              // Set height to 1px to work around a Safari rendering bug:
+              // without this explicit height, the div does not contribute to
+              // the width of the element.
+              wideDiv.style.height = '1px';
               wideDiv.style.width = '100px';
               el.appendChild(wideDiv);
 
@@ -1698,6 +1706,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'Horizontal scrollbar size is added when bottom-left aligned.',
             function() {
               const wideDiv = document.createElement('div');
+              // Set height to 1px to work around a Safari rendering bug:
+              // without this explicit height, the div does not contribute to
+              // the width of the element.
+              wideDiv.style.height = '1px';
               wideDiv.style.width = '100px';
               el.appendChild(wideDiv);
 
@@ -1721,6 +1733,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test(
             'Horizontal scrollbar size is added when top-right aligned.', function() {
               const wideDiv = document.createElement('div');
+              // Set height to 1px to work around a Safari rendering bug:
+              // without this explicit height, the div does not contribute to
+              // the width of the element.
+              wideDiv.style.height = '1px';
               wideDiv.style.width = '100px';
               el.appendChild(wideDiv);
 
@@ -1745,6 +1761,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'Horizontal scrollbar size is added when middle-right aligned.',
             function() {
               const wideDiv = document.createElement('div');
+              // Set height to 1px to work around a Safari rendering bug:
+              // without this explicit height, the div does not contribute to
+              // the width of the element.
+              wideDiv.style.height = '1px';
               wideDiv.style.width = '100px';
               el.appendChild(wideDiv);
 
@@ -1775,6 +1795,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'Horizontal scrollbar size is added when bottom-right aligned.',
             function() {
               const wideDiv = document.createElement('div');
+              // Set height to 1px to work around a Safari rendering bug:
+              // without this explicit height, the div does not contribute to
+              // the width of the element.
+              wideDiv.style.height = '1px';
               wideDiv.style.width = '100px';
               el.appendChild(wideDiv);
 
