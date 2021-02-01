@@ -459,79 +459,72 @@ export const IronFitBehavior = {
       const positionedHeightDelta =
           positionedOffsetHeight - positionedClientHeight;
 
-      if (positionedWidthDelta > unpositionedWidthDelta) {
-        const sizingTargetScrollbarWidth =
-            positionedWidthDelta - unpositionedWidthDelta;
+      const sizingTargetScrollbarWidth =
+          positionedWidthDelta - unpositionedWidthDelta;
+      if (sizingTargetScrollbarWidth > 0) {
+        // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
+        // allowed width within `fitRect`.
+        const fitRectMaxWidth = fitRect.width - margin.left - margin.right;
+        const newMaxWidth =
+            Math.min(fitRectMaxWidth, maxWidth + sizingTargetScrollbarWidth);
+        this.sizingTarget.style.maxWidth = `${newMaxWidth}px`;
 
-        if (sizingTargetScrollbarWidth > 0) {
-          // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
-          // allowed width within `fitRect`.
-          const fitRectMaxWidth = fitRect.width - margin.left - margin.right;
-          const newMaxWidth =
-              Math.min(fitRectMaxWidth, maxWidth + sizingTargetScrollbarWidth);
-          this.sizingTarget.style.maxWidth = `${newMaxWidth}px`;
+        // Measure the element's real change in width. This may not equal
+        // `sizingTargetScrollbarWidth` if the overflow amount is less than the
+        // scrollbar size.
+        const offsetWidth = this.sizingTarget.offsetWidth;
+        const addedWidth = offsetWidth - positionedOffsetWidth;
 
-          // Measure the element's real change in width. This may not equal
-          // `sizingTargetScrollbarWidth` if the overflow amount is less than
-          // the scrollbar size.
-          const offsetWidth = this.sizingTarget.offsetWidth;
-          const addedWidth = offsetWidth - positionedOffsetWidth;
-
-          // Adjust the left position if the alignment requires it.
-          let newLeftPosition;
-          if (position.horizontalAlign === 'left') {
-            newLeftPosition = leftPosition;
-          } else if (position.horizontalAlign === 'center') {
-            newLeftPosition = leftPosition - addedWidth / 2;
-          } else if (position.horizontalAlign === 'right') {
-            newLeftPosition = leftPosition - addedWidth;
-          }
-
-          // Constrain the new left position based on `fitRect` again.
-          newLeftPosition = Math.max(
-              fitRect.left + margin.left,
-              Math.min(
-                  newLeftPosition, fitRect.right - margin.right - offsetWidth));
-          this.style.left = `${newLeftPosition}px`;
+        // Adjust the left position if the alignment requires it.
+        let newLeftPosition;
+        if (position.horizontalAlign === 'left') {
+          newLeftPosition = leftPosition;
+        } else if (position.horizontalAlign === 'center') {
+          newLeftPosition = leftPosition - addedWidth / 2;
+        } else if (position.horizontalAlign === 'right') {
+          newLeftPosition = leftPosition - addedWidth;
         }
+
+        // Constrain the new left position based on `fitRect` again.
+        newLeftPosition = Math.max(
+            fitRect.left + margin.left,
+            Math.min(
+                newLeftPosition, fitRect.right - margin.right - offsetWidth));
+        this.style.left = `${newLeftPosition}px`;
       }
 
-      if (positionedHeightDelta > unpositionedHeightDelta) {
-        const sizingTargetScrollbarHeight =
-            positionedHeightDelta - unpositionedHeightDelta;
+      const sizingTargetScrollbarHeight =
+          positionedHeightDelta - unpositionedHeightDelta;
+      if (sizingTargetScrollbarHeight > 0) {
+        // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the overall
+        // allowed height within `fitRect`.
+        const fitRectMaxHeight = fitRect.height - margin.top - margin.bottom;
+        const newMaxHeight =
+            Math.min(fitRectMaxHeight, maxHeight + sizingTargetScrollbarHeight);
+        this.sizingTarget.style.maxHeight = `${newMaxHeight}px`;
 
-        if (sizingTargetScrollbarHeight > 0) {
-          // Expand `maxHeight` by `sizingTargetScrollbarHeight` up to the
-          // overall allowed height within `fitRect`.
-          const fitRectMaxHeight = fitRect.height - margin.top - margin.bottom;
-          const newMaxHeight = Math.min(
-              fitRectMaxHeight, maxHeight + sizingTargetScrollbarHeight);
-          this.sizingTarget.style.maxHeight = `${newMaxHeight}px`;
+        // Measure the element's real change in height. This may not equal
+        // `sizingTargetScrollbarHeight` if the overflow amount is less than the
+        // scrollbar size.
+        const offsetHeight = this.sizingTarget.offsetHeight;
+        const addedHeight = offsetHeight - positionedOffsetHeight;
 
-          // Measure the element's real change in height. This may not equal
-          // `sizingTargetScrollbarHeight` if the overflow amount is less than
-          // the scrollbar size.
-          const offsetHeight = this.sizingTarget.offsetHeight;
-          const addedHeight = offsetHeight - positionedOffsetHeight;
-
-          // Adjust the top position if the alignment requires it.
-          let newTopPosition;
-          if (position.verticalAlign === 'top') {
-            newTopPosition = topPosition;
-          } else if (position.verticalAlign === 'middle') {
-            newTopPosition = topPosition - addedHeight / 2;
-          } else if (position.verticalAlign === 'bottom') {
-            newTopPosition = topPosition - addedHeight;
-          }
-
-          // Constrain the new top position based on `fitRect` again.
-          newTopPosition = Math.max(
-              fitRect.top + margin.top,
-              Math.min(
-                  newTopPosition,
-                  fitRect.bottom - margin.bottom - offsetHeight));
-          this.style.top = `${newTopPosition}px`;
+        // Adjust the top position if the alignment requires it.
+        let newTopPosition;
+        if (position.verticalAlign === 'top') {
+          newTopPosition = topPosition;
+        } else if (position.verticalAlign === 'middle') {
+          newTopPosition = topPosition - addedHeight / 2;
+        } else if (position.verticalAlign === 'bottom') {
+          newTopPosition = topPosition - addedHeight;
         }
+
+        // Constrain the new top position based on `fitRect` again.
+        newTopPosition = Math.max(
+            fitRect.top + margin.top,
+            Math.min(
+                newTopPosition, fitRect.bottom - margin.bottom - offsetHeight));
+        this.style.top = `${newTopPosition}px`;
       }
     }
   },
