@@ -445,53 +445,15 @@ export const IronFitBehavior = {
     this.style.top = `${topPosition}px`;
 
     if (this.expandSizingTargetForScrollbars) {
-      const positionedOffsetWidth = this.sizingTarget.offsetWidth;
-      const positionedOffsetHeight = this.sizingTarget.offsetHeight;
-      const positionedClientWidth = this.sizingTarget.clientWidth;
-      const positionedClientHeight = this.sizingTarget.clientHeight;
+      // Expand the height first - i.e. in the typical block direction - in case
+      // this expands the element enough to remove the vertical scrollbar.
 
-      const unpositionedWidthDelta =
-          unpositionedOffsetWidth - unpositionedClientWidth;
+      const positionedOffsetHeight = this.sizingTarget.offsetHeight;
+      const positionedClientHeight = this.sizingTarget.clientHeight;
       const unpositionedHeightDelta =
           unpositionedOffsetHeight - unpositionedClientHeight;
-      const positionedWidthDelta =
-          positionedOffsetWidth - positionedClientWidth;
       const positionedHeightDelta =
           positionedOffsetHeight - positionedClientHeight;
-
-      const sizingTargetScrollbarWidth =
-          positionedWidthDelta - unpositionedWidthDelta;
-      if (sizingTargetScrollbarWidth > 0) {
-        // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
-        // allowed width within `fitRect`.
-        const fitRectMaxWidth = fitRect.width - margin.left - margin.right;
-        const newMaxWidth =
-            Math.min(fitRectMaxWidth, maxWidth + sizingTargetScrollbarWidth);
-        this.sizingTarget.style.maxWidth = `${newMaxWidth}px`;
-
-        // Measure the element's real change in width. This may not equal
-        // `sizingTargetScrollbarWidth` if the overflow amount is less than the
-        // scrollbar size.
-        const offsetWidth = this.sizingTarget.offsetWidth;
-        const addedWidth = offsetWidth - positionedOffsetWidth;
-
-        // Adjust the left position if the alignment requires it.
-        let newLeftPosition;
-        if (position.horizontalAlign === 'left') {
-          newLeftPosition = leftPosition;
-        } else if (position.horizontalAlign === 'center') {
-          newLeftPosition = leftPosition - addedWidth / 2;
-        } else if (position.horizontalAlign === 'right') {
-          newLeftPosition = leftPosition - addedWidth;
-        }
-
-        // Constrain the new left position based on `fitRect` again.
-        newLeftPosition = Math.max(
-            fitRect.left + margin.left,
-            Math.min(
-                newLeftPosition, fitRect.right - margin.right - offsetWidth));
-        this.style.left = `${newLeftPosition}px`;
-      }
 
       const sizingTargetScrollbarHeight =
           positionedHeightDelta - unpositionedHeightDelta;
@@ -525,6 +487,47 @@ export const IronFitBehavior = {
             Math.min(
                 newTopPosition, fitRect.bottom - margin.bottom - offsetHeight));
         this.style.top = `${newTopPosition}px`;
+      }
+
+      const positionedOffsetWidth = this.sizingTarget.offsetWidth;
+      const positionedClientWidth = this.sizingTarget.clientWidth;
+      const unpositionedWidthDelta =
+          unpositionedOffsetWidth - unpositionedClientWidth;
+      const positionedWidthDelta =
+          positionedOffsetWidth - positionedClientWidth;
+
+      const sizingTargetScrollbarWidth =
+          positionedWidthDelta - unpositionedWidthDelta;
+      if (sizingTargetScrollbarWidth > 0) {
+        // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
+        // allowed width within `fitRect`.
+        const fitRectMaxWidth = fitRect.width - margin.left - margin.right;
+        const newMaxWidth =
+            Math.min(fitRectMaxWidth, maxWidth + sizingTargetScrollbarWidth);
+        this.sizingTarget.style.maxWidth = `${newMaxWidth}px`;
+
+        // Measure the element's real change in width. This may not equal
+        // `sizingTargetScrollbarWidth` if the overflow amount is less than the
+        // scrollbar size.
+        const offsetWidth = this.sizingTarget.offsetWidth;
+        const addedWidth = offsetWidth - positionedOffsetWidth;
+
+        // Adjust the left position if the alignment requires it.
+        let newLeftPosition;
+        if (position.horizontalAlign === 'left') {
+          newLeftPosition = leftPosition;
+        } else if (position.horizontalAlign === 'center') {
+          newLeftPosition = leftPosition - addedWidth / 2;
+        } else if (position.horizontalAlign === 'right') {
+          newLeftPosition = leftPosition - addedWidth;
+        }
+
+        // Constrain the new left position based on `fitRect` again.
+        newLeftPosition = Math.max(
+            fitRect.left + margin.left,
+            Math.min(
+                newLeftPosition, fitRect.right - margin.right - offsetWidth));
+        this.style.left = `${newLeftPosition}px`;
       }
     }
   },
