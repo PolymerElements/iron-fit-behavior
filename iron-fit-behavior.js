@@ -376,6 +376,8 @@ export const IronFitBehavior = {
     }
     this._discoverInfo();
 
+    window.ShadyDOM && window.ShadyDOM.flush();
+
     this.style.position = 'fixed';
     // Need border-box for margin/padding.
     this.sizingTarget.style.boxSizing = 'border-box';
