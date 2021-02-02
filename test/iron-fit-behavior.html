@@ -17,6 +17,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
+    <script>
+      WCT = {
+        mochaOptions: {timeout: Infinity}
+      }
+    </script>
+
     <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script src="../node_modules/wct-browser-legacy/browser.js"></script>
 
@@ -279,9 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         container.appendChild(document.createTextNode('ThisTextCantBeBroken'));
 
         const content = document.createElement('div');
-        Object.assign(content.style, {
-          height: '200px',
-        });
+        content.style.height = '200px';
         container.appendChild(content);
 
         document.body.appendChild(container);
@@ -290,6 +294,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         document.body.removeChild(container);
 
         return hasOverflowAutoWidthBug;
+      })();
+
+      // IE11 has a bug where an element with (1) `overflow: auto;`, (2) size
+      // based on its content's natural size, (3) absolute positioning (either
+      // `absolute` or `fixed`), and (4) use `max-width` to constrain its width
+      // will place its vertical scrollbar outside the area constrained by
+      // `max-width`.
+      const hasVerticalScrollbarMaxWidthBug = (() => {
+        const container = document.createElement('div');
+        Object.assign(container.style, {
+          overflow: 'auto',
+          position: 'fixed',
+          left: '0px',
+          top: '0px',
+          maxWidth: '100px',
+          maxHeight: '100px',
+        });
+
+        const content = document.createElement('div');
+        content.style.width = '200px';
+        content.style.height = '200px';
+        container.appendChild(content);
+
+        document.body.appendChild(container);
+        const hasVerticalScrollbarMaxWidthBug =
+            Math.abs(container.offsetWidth - 100) > 1;
+        document.body.removeChild(container);
+
+        return hasVerticalScrollbarMaxWidthBug;
+      })();
+
+      const scrollbarSize = (() => {
+        const container = document.createElement('div');
+        Object.assign(container.style, {
+          overflow: 'auto',
+          position: 'fixed',
+          left: '0px',
+          top: '0px',
+          maxWidth: '100px',
+          maxHeight: '100px',
+        });
+
+        const content = document.createElement('div');
+        content.style.width = '200px';
+        content.style.height = '200px';
+        container.appendChild(content);
+
+        document.body.appendChild(container);
+        const width = container.offsetWidth - container.clientWidth;
+        const height = container.offsetHeight - container.clientHeight;
+        document.body.removeChild(container);
+
+        return {width, height};
       })();
 
       suite('basic', function() {
@@ -1554,13 +1611,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           const elRect = el.getBoundingClientRect();
 
           // The element is still top-center aligned.
-          const positionTargetWidth =
-              positionTargetRect.right - positionTargetRect.left;
-          const elWidth = elRect.right - elRect.left;
-          assert.closeTo(
-              positionTargetRect.left + positionTargetWidth / 2,
-              elRect.left + elWidth / 2,
-              1);
+
+          const positionTargetCenter =
+              (positionTargetRect.left + positionTargetRect.right) / 2;
+          const elCenter = (elRect.left + elRect.right) / 2;
+
+          if (hasVerticalScrollbarMaxWidthBug) {
+            // With this bug, the vertical scrollbar is not placed inside
+            // the area constrained by `max-width`.
+            assert.closeTo(
+                positionTargetCenter, elCenter - scrollbarSize.width / 2, 1);
+          } else {
+            assert.closeTo(positionTargetCenter, elCenter, 1);
+          }
 
           if (hasOverflowAutoWidthBug) {
             // With this bug, the element will be expanded downwards, then
@@ -1597,7 +1660,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           const elRect = el.getBoundingClientRect();
 
           // The element is still top-left aligned.
-          assert.closeTo(positionTargetRect.right, elRect.right, 1);
+
+          if (hasVerticalScrollbarMaxWidthBug) {
+            // With this bug, the vertical scrollbar is not placed inside
+            // the area constrained by `max-width`.
+            assert.closeTo(
+                positionTargetRect.right, elRect.right - scrollbarSize.width, 1);
+          } else {
+            assert.closeTo(positionTargetRect.right, elRect.right, 1);
+          }
 
           if (hasOverflowAutoWidthBug) {
             // With this bug, the element will be expanded downwards, then
@@ -1676,13 +1747,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               const elRect = el.getBoundingClientRect();
 
               // The element is still bottom-center aligned.
-              const positionTargetWidth =
-                  positionTargetRect.right - positionTargetRect.left;
-              const elWidth = elRect.right - elRect.left;
-              assert.closeTo(
-                  positionTargetRect.left + positionTargetWidth / 2,
-                  elRect.left + elWidth / 2,
-                  1);
+              const positionTargetCenter =
+                  (positionTargetRect.left + positionTargetRect.right) / 2;
+              const elCenter = (elRect.left + elRect.right) / 2;
+
+              if (hasVerticalScrollbarMaxWidthBug) {
+                // With this bug, the vertical scrollbar is not placed inside
+                // the area constrained by `max-width`.
+                assert.closeTo(
+                    positionTargetCenter, elCenter - scrollbarSize.width / 2, 1);
+              } else {
+                assert.closeTo(positionTargetCenter, elCenter, 1);
+              }
 
               if (hasOverflowAutoWidthBug) {
                 // With this bug, the element will be expanded downwards.
@@ -1721,8 +1797,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               const positionTargetRect = el.positionTarget.getBoundingClientRect();
               const elRect = el.getBoundingClientRect();
 
-              // The element is still bottom-left aligned.
-              assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              // The element is still bottom-right aligned.
+
+              if (hasVerticalScrollbarMaxWidthBug) {
+                // With this bug, the vertical scrollbar is not placed inside
+                // the area constrained by `max-width`.
+                assert.closeTo(
+                    positionTargetRect.right, elRect.right - scrollbarSize.width, 1);
+              } else {
+                assert.closeTo(positionTargetRect.right, elRect.right, 1);
+              }
 
               if (hasOverflowAutoWidthBug) {
                 // With this bug, the element will be expanded downwards.
