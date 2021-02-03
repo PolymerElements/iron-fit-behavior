@@ -1560,10 +1560,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           if (hasOverflowAutoWidthBug) {
-            // With this bug, the scrollbar will overflow by the amount of
-            // right padding.
+            // With this bug, the scrollbar will overflow by the scrollbar width
+            // minus the right padding.
             const paddingRight = parseFloat(getComputedStyle(el).paddingRight, 10);
-            assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+            const rightOverflow = scrollbarSize.width - paddingRight;
+            assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
           } else {
             // The element does not horizontally overflow when expanded by
             // the scrollbar size.
@@ -1597,10 +1598,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           if (hasOverflowAutoWidthBug) {
-            // With this bug, the scrollbar will overflow by the amount of
-            // right padding.
+            // With this bug, the scrollbar will overflow by the scrollbar width
+            // minus the right padding.
             const paddingRight = parseFloat(getComputedStyle(el).paddingRight, 10);
-            assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+            const rightOverflow = scrollbarSize.width - paddingRight;
+            assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
           } else {
             // The element does not horizontally overflow when expanded by
             // the scrollbar size.
@@ -1646,10 +1648,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           el.fit();
 
           if (hasOverflowAutoWidthBug) {
-            // With this bug, the scrollbar will overflow by the amount of
-            // right padding.
+            // With this bug, the scrollbar will overflow by the scrollbar width
+            // minus the right padding.
             const paddingRight = parseFloat(getComputedStyle(el).paddingRight, 10);
-            assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+            const rightOverflow = scrollbarSize.width - paddingRight;
+            assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
           } else {
             // The element does not horizontally overflow when expanded by
             // the scrollbar size.
@@ -1692,11 +1695,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               if (hasOverflowAutoWidthBug) {
-                // With this bug, the scrollbar will overflow by the amount of
-                // right padding.
+                // With this bug, the scrollbar will overflow by the scrollbar width
+                // minus the right padding.
                 const paddingRight =
                     parseFloat(getComputedStyle(el).paddingRight, 10);
-                assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+                const rightOverflow = scrollbarSize.width - paddingRight;
+                assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
               } else {
                 // The element does not horizontally overflow when expanded by
                 // the scrollbar size.
@@ -1732,11 +1736,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               if (hasOverflowAutoWidthBug) {
-                // With this bug, the scrollbar will overflow by the amount of
-                // right padding.
+                // With this bug, the scrollbar will overflow by the scrollbar width
+                // minus the right padding.
                 const paddingRight =
                     parseFloat(getComputedStyle(el).paddingRight, 10);
-                assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+                const rightOverflow = scrollbarSize.width - paddingRight;
+                assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
               } else {
                 // The element does not horizontally overflow when expanded by
                 // the scrollbar size.
@@ -1783,11 +1788,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               el.fit();
 
               if (hasOverflowAutoWidthBug) {
-                // With this bug, the scrollbar will overflow by the amount of
-                // right padding.
+                // With this bug, the scrollbar will overflow by the scrollbar width
+                // minus the right padding.
                 const paddingRight =
                     parseFloat(getComputedStyle(el).paddingRight, 10);
-                assert.closeTo(el.clientWidth + paddingRight, el.scrollWidth, 1);
+                const rightOverflow = scrollbarSize.width - paddingRight;
+                assert.closeTo(el.clientWidth + rightOverflow, el.scrollWidth, 1);
               } else {
                 // The element does not horizontally overflow when expanded by
                 // the scrollbar size.
