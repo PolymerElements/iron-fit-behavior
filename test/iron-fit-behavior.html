@@ -296,35 +296,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return hasOverflowAutoWidthBug;
       })();
 
-      // IE11 has a bug where an element with (1) `overflow: auto;`, (2) size
-      // based on its content's natural size, (3) absolute positioning (either
-      // `absolute` or `fixed`), and (4) use `max-width` to constrain its width
-      // will place its vertical scrollbar outside the area constrained by
-      // `max-width`.
-      const hasVerticalScrollbarMaxWidthBug = (() => {
-        const container = document.createElement('div');
-        Object.assign(container.style, {
-          overflow: 'auto',
-          position: 'fixed',
-          left: '0px',
-          top: '0px',
-          maxWidth: '100px',
-          maxHeight: '100px',
-        });
-
-        const content = document.createElement('div');
-        content.style.width = '200px';
-        content.style.height = '200px';
-        container.appendChild(content);
-
-        document.body.appendChild(container);
-        const hasVerticalScrollbarMaxWidthBug =
-            Math.abs(container.offsetWidth - 100) > 1;
-        document.body.removeChild(container);
-
-        return hasVerticalScrollbarMaxWidthBug;
-      })();
-
       const scrollbarSize = (() => {
         const container = document.createElement('div');
         Object.assign(container.style, {
@@ -1618,14 +1589,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               (positionTargetRect.left + positionTargetRect.right) / 2;
           const elCenter = (elRect.left + elRect.right) / 2;
 
-          if (hasVerticalScrollbarMaxWidthBug) {
-            // With this bug, the vertical scrollbar is not placed inside
-            // the area constrained by `max-width`.
-            assert.closeTo(
-                positionTargetCenter, elCenter - scrollbarSize.width / 2, 1);
-          } else {
-            assert.closeTo(positionTargetCenter, elCenter, 1);
-          }
+          assert.closeTo(positionTargetCenter, elCenter, 1);
 
           if (hasOverflowAutoWidthBug) {
             // With this bug, the element will be expanded downwards, then
@@ -1664,14 +1628,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           // The element is still top-left aligned.
 
-          if (hasVerticalScrollbarMaxWidthBug) {
-            // With this bug, the vertical scrollbar is not placed inside
-            // the area constrained by `max-width`.
-            assert.closeTo(
-                positionTargetRect.right, elRect.right - scrollbarSize.width, 1);
-          } else {
-            assert.closeTo(positionTargetRect.right, elRect.right, 1);
-          }
+          assert.closeTo(positionTargetRect.right, elRect.right, 1);
 
           if (hasOverflowAutoWidthBug) {
             // With this bug, the element will be expanded downwards, then
@@ -1756,14 +1713,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   (positionTargetRect.left + positionTargetRect.right) / 2;
               const elCenter = (elRect.left + elRect.right) / 2;
 
-              if (hasVerticalScrollbarMaxWidthBug) {
-                // With this bug, the vertical scrollbar is not placed inside
-                // the area constrained by `max-width`.
-                assert.closeTo(
-                    positionTargetCenter, elCenter - scrollbarSize.width / 2, 1);
-              } else {
-                assert.closeTo(positionTargetCenter, elCenter, 1);
-              }
+              assert.closeTo(positionTargetCenter, elCenter, 1);
 
               if (hasOverflowAutoWidthBug) {
                 // With this bug, the element will be expanded downwards.
@@ -1805,14 +1755,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
               // The element is still bottom-right aligned.
 
-              if (hasVerticalScrollbarMaxWidthBug) {
-                // With this bug, the vertical scrollbar is not placed inside
-                // the area constrained by `max-width`.
-                assert.closeTo(
-                    positionTargetRect.right, elRect.right - scrollbarSize.width, 1);
-              } else {
-                assert.closeTo(positionTargetRect.right, elRect.right, 1);
-              }
+              assert.closeTo(positionTargetRect.right, elRect.right, 1);
 
               if (hasOverflowAutoWidthBug) {
                 // With this bug, the element will be expanded downwards.

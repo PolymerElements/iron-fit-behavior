@@ -12,6 +12,70 @@ import '@polymer/polymer/polymer-legacy.js';
 
 import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
+// IE11 has a bug where an element with (1) `overflow: auto;`, (2) size based on
+// its content's natural size, (3) absolute positioning (either `absolute` or
+// `fixed`), and (4) use `max-width` to constrain its width will place its
+// vertical scrollbar outside the area constrained by `max-width`.
+const hasVerticalScrollbarMaxWidthBug = (() => {
+  let hasVerticalScrollbarMaxWidthBug = undefined;
+  return () => {
+    if (hasVerticalScrollbarMaxWidthBug === undefined) {
+      const container = document.createElement('div');
+      Object.assign(container.style, {
+        overflow: 'auto',
+        position: 'fixed',
+        left: '0px',
+        top: '0px',
+        maxWidth: '100px',
+        maxHeight: '100px',
+      });
+
+      const content = document.createElement('div');
+      content.style.width = '200px';
+      content.style.height = '200px';
+      container.appendChild(content);
+
+      document.body.appendChild(container);
+      hasVerticalScrollbarMaxWidthBug =
+          Math.abs(container.offsetWidth - 100) > 1;
+      document.body.removeChild(container);
+    }
+
+    return hasVerticalScrollbarMaxWidthBug;
+  };
+})();
+
+const scrollbarSize = (() => {
+  let scrollbarSize = undefined;
+  return () => {
+    if (scrollbarSize === undefined) {
+      const container = document.createElement('div');
+      Object.assign(container.style, {
+        overflow: 'auto',
+        position: 'fixed',
+        left: '0px',
+        top: '0px',
+        maxWidth: '100px',
+        maxHeight: '100px',
+      });
+
+      const content = document.createElement('div');
+      content.style.width = '200px';
+      content.style.height = '200px';
+      container.appendChild(content);
+
+      document.body.appendChild(container);
+      scrollbarSize = {
+        width: container.offsetWidth - container.clientWidth,
+        height: container.offsetHeight - container.clientHeight,
+      };
+      document.body.removeChild(container);
+    }
+
+    return scrollbarSize;
+  };
+})();
+
 /**
 `Polymer.IronFitBehavior` fits an element in another element using `max-height`
 and `max-width`, and optionally centers it in the window or another element.
@@ -501,17 +565,21 @@ export const IronFitBehavior = {
       const sizingTargetScrollbarWidth =
           positionedWidthDelta - unpositionedWidthDelta;
       if (sizingTargetScrollbarWidth > 0) {
+        const maxWidthBugOffset =
+            hasVerticalScrollbarMaxWidthBug() ? scrollbarSize().width : 0;
+
         // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
         // allowed width within `fitRect`.
         const fitRectMaxWidth = fitRect.width - margin.left - margin.right;
-        const newMaxWidth =
-            Math.min(fitRectMaxWidth, maxWidth + sizingTargetScrollbarWidth);
+        const newMaxWidth = Math.min(
+            fitRectMaxWidth,
+            maxWidth + sizingTargetScrollbarWidth - maxWidthBugOffset);
         this.sizingTarget.style.maxWidth = `${newMaxWidth}px`;
 
         // Measure the element's real change in width. This may not equal
         // `sizingTargetScrollbarWidth` if the overflow amount is less than the
         // scrollbar size.
-        const offsetWidth = this.sizingTarget.offsetWidth;
+        const offsetWidth = this.sizingTarget.offsetWidth + maxWidthBugOffset;
         const addedWidth = offsetWidth - positionedOffsetWidth;
 
         // Adjust the left position if the alignment requires it.
