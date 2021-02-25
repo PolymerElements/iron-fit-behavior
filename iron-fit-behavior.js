@@ -16,63 +16,39 @@ import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 // its content's natural size, (3) absolute positioning (either `absolute` or
 // `fixed`), and (4) use `max-width` to constrain its width will place its
 // vertical scrollbar outside the area constrained by `max-width`.
-const hasVerticalScrollbarMaxWidthBug = (() => {
-  let hasVerticalScrollbarMaxWidthBug = undefined;
+//
+// Unlike other browsers, IE11 doesn't support changing the size of scrollbars
+// with CSS, so we don't need to read this value live from the element in
+// question when trying to work around the bug.
+const getVerticalScrollbarMaxWidthBugOffset = (() => {
+  let offset = undefined;
   return () => {
-    if (hasVerticalScrollbarMaxWidthBug === undefined) {
-      const container = document.createElement('div');
-      Object.assign(container.style, {
-        overflow: 'auto',
-        position: 'fixed',
-        left: '0px',
-        top: '0px',
-        maxWidth: '100px',
-        maxHeight: '100px',
-      });
-
-      const content = document.createElement('div');
-      content.style.width = '200px';
-      content.style.height = '200px';
-      container.appendChild(content);
-
-      document.body.appendChild(container);
-      hasVerticalScrollbarMaxWidthBug =
-          Math.abs(container.offsetWidth - 100) > 1;
-      document.body.removeChild(container);
+    if (offset !== undefined) {
+      return offset;
     }
 
-    return hasVerticalScrollbarMaxWidthBug;
-  };
-})();
+    const container = document.createElement('div');
+    Object.assign(container.style, {
+      overflow: 'auto',
+      position: 'fixed',
+      left: '0px',
+      top: '0px',
+      maxWidth: '100px',
+      maxHeight: '100px',
+    });
 
-const scrollbarSize = (() => {
-  let scrollbarSize = undefined;
-  return () => {
-    if (scrollbarSize === undefined) {
-      const container = document.createElement('div');
-      Object.assign(container.style, {
-        overflow: 'auto',
-        position: 'fixed',
-        left: '0px',
-        top: '0px',
-        maxWidth: '100px',
-        maxHeight: '100px',
-      });
+    const content = document.createElement('div');
+    content.style.width = '200px';
+    content.style.height = '200px';
+    container.appendChild(content);
 
-      const content = document.createElement('div');
-      content.style.width = '200px';
-      content.style.height = '200px';
-      container.appendChild(content);
+    document.body.appendChild(container);
+    offset = Math.abs(container.offsetWidth - 100) > 1 ?
+        container.offsetWidth - container.clientWidth :
+        0;
+    document.body.removeChild(container);
 
-      document.body.appendChild(container);
-      scrollbarSize = {
-        width: container.offsetWidth - container.clientWidth,
-        height: container.offsetHeight - container.clientHeight,
-      };
-      document.body.removeChild(container);
-    }
-
-    return scrollbarSize;
+    return offset;
   };
 })();
 
@@ -565,8 +541,7 @@ export const IronFitBehavior = {
       const sizingTargetScrollbarWidth =
           positionedWidthDelta - unpositionedWidthDelta;
       if (sizingTargetScrollbarWidth > 0) {
-        const maxWidthBugOffset =
-            hasVerticalScrollbarMaxWidthBug() ? scrollbarSize().width : 0;
+        const maxWidthBugOffset = getVerticalScrollbarMaxWidthBugOffset();
 
         // Expand `maxWidth` by `sizingTargetScrollbarWidth` up to the overall
         // allowed width within `fitRect`.
