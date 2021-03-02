@@ -20,37 +20,36 @@ import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
 // Unlike other browsers, IE11 doesn't support changing the size of scrollbars
 // with CSS, so we don't need to read this value live from the element in
 // question when trying to work around the bug.
-const getVerticalScrollbarMaxWidthBugOffset = (() => {
-  let offset = undefined;
-  return () => {
-    if (offset !== undefined) {
-      return offset;
-    }
+let verticalScrollbarMaxWidthBugOffset = undefined;
+const getVerticalScrollbarMaxWidthBugOffset = () => {
+  if (verticalScrollbarMaxWidthBugOffset !== undefined) {
+    return verticalScrollbarMaxWidthBugOffset;
+  }
 
-    const container = document.createElement('div');
-    Object.assign(container.style, {
-      overflow: 'auto',
-      position: 'fixed',
-      left: '0px',
-      top: '0px',
-      maxWidth: '100px',
-      maxHeight: '100px',
-    });
+  const container = document.createElement('div');
+  Object.assign(container.style, {
+    overflow: 'auto',
+    position: 'fixed',
+    left: '0px',
+    top: '0px',
+    maxWidth: '100px',
+    maxHeight: '100px',
+  });
 
-    const content = document.createElement('div');
-    content.style.width = '200px';
-    content.style.height = '200px';
-    container.appendChild(content);
+  const content = document.createElement('div');
+  content.style.width = '200px';
+  content.style.height = '200px';
+  container.appendChild(content);
 
-    document.body.appendChild(container);
-    offset = Math.abs(container.offsetWidth - 100) > 1 ?
-        container.offsetWidth - container.clientWidth :
-        0;
-    document.body.removeChild(container);
+  document.body.appendChild(container);
+  verticalScrollbarMaxWidthBugOffset =
+      Math.abs(container.offsetWidth - 100) > 1 ?
+      container.offsetWidth - container.clientWidth :
+      0;
+  document.body.removeChild(container);
 
-    return offset;
-  };
-})();
+  return verticalScrollbarMaxWidthBugOffset;
+};
 
 /**
 `Polymer.IronFitBehavior` fits an element in another element using `max-height`
